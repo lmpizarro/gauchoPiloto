@@ -1,2 +1,3 @@
 ./imu/build-uno
 ./autopilot/myArduPilot1.0/build-uno
+./gcs/interfaQueue.pyc

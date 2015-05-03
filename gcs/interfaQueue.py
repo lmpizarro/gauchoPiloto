@@ -3,11 +3,6 @@ import threading
 import time
 
 redis = redis.Redis('localhost')
-toRedisOut = "estadoHMI"
-fromRedisIn   = "estadoPlanta"
-mensajeAutoPiloto = ""
-mensajeToRedis = ""
-
 
 class fromHmiToQueue ():
 	def __init__ (self, queueName, sleepTime = .001):
@@ -18,7 +13,7 @@ class fromHmiToQueue ():
 
         def callback(self):
             while True:
-                  print ("mesg", self.mensajeToRedis)
+                  print ("mesg", self.mensajeToQueue)
 		  if self.sendFlag == 1:
                      redis.publish (self.queueName , self.mensajeToQueue)
 		     self.sendFlag = 0
@@ -30,7 +25,7 @@ class fromHmiToQueue ():
             self.t.start()
 
 	def sendMesagge (self, msg):
-	    self.mensajeToRedis = msg
+	    self.mensajeToQueue = msg
 	    self.sendFlag = 1
 
 # Envia a  la planta mensajes

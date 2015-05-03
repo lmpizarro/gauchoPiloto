@@ -14,10 +14,11 @@ http://muagames.com/tutorials/pygame-2-the-basics/
 
 
 try:
-    import pygame, sys, os, math, random
+    import pygame, sys, os, math
     from pygame.locals import *
+    import interfaQueue
 except ImportError, err:
-    print "%s Failed to Load Module: %s" % (__file__, err)
+    print ("%s Failed to Load Module: %s" % (__file__, err))
     import sys
     sys.exit(1)
 
@@ -34,11 +35,11 @@ brown    = (0x55,0x33,0x00)
 
 
 
-class Game(object):
+class GCS(object):
     """Our game object! This is a fairly simple object that handles the
     initialization of pygame and sets up our game to run."""
 
-    def __init__(self, width = 640, height = 480):
+    def __init__(self, queue, width = 640, height = 480):
         """Called when the the Game object is initialized. Initializes
         pygame and sets up our pygame window and other pygame tools
         that we will need for more complicated tutorials."""
@@ -48,7 +49,9 @@ class Game(object):
 
         self.width = width
 	self.height = height
+	self.queue = queue
 	self.caption = 'Estación de Control'
+
 
         # create our window
         self.window = pygame.display.set_mode((self.width, self.height))
@@ -179,7 +182,8 @@ class Game(object):
         return True
 
 
-# create a game and run it
+# create a gcs and run it
 if __name__ == '__main__':
-    game = Game(800, 600)
+    queue = interfaQueue.fromHmiToQueue ("hmiState")	
+    game = GCS(queue, 800, 600)
     game.run()
