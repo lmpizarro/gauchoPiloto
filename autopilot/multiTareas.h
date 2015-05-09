@@ -7,6 +7,7 @@
  *       https://learn.adafruit.com/multi-tasking-the-arduino-part-1
  *       https://github.com/leomil72/swRTC
  *       http://www.leonardomiliani.com/en/2011/swrtc-un-orologio-in-tempo-reale-via-software/
+ *       http://www.tigoe.com/pcomp/code/controllers/real-time-systems-and-operating-systems/
  * */
 
 
