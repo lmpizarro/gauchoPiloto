@@ -1,23 +1,9 @@
-const int HARD_BAUD_RATE = 9600;
-const int MAX_BYTES  = 4;
+#include "protocol.h"
+#include <stdint.h>
 
-class floatToHex
-{
-    private:
-        float minF;
-        float maxF;
-        uint32_t max_int;
-        float p;
-        float b;
-        uint32_t n_byteI;
-	char hexDigits [16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-    public:
-	char hexs[MAX_BYTES * 2 + 1];
-        floatToHex (float, float, uint32_t);
-        uint32_t floatToInt (float f);
-	void printParam ();
-        void intToHex (uint32_t);
-};
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 
 floatToHex::floatToHex (float min_, float max_, uint32_t n_byteI_ ){
     minF = min_;
@@ -31,16 +17,7 @@ floatToHex::floatToHex (float min_, float max_, uint32_t n_byteI_ ){
 }
 
 uint32_t floatToHex::floatToInt (float f){
-  return max(0, min(f*p + b, max_int));
-}
-
-void floatToHex::printParam (){
-    Serial.println (minF);
-    Serial.println (maxF);
-    Serial.println (p);
-    Serial.println (b);
-    Serial.println (max_int);
-    Serial.println (n_byteI);
+  return MAX(0, MIN(f*p + b, max_int));
 }
 
 //
@@ -58,28 +35,3 @@ void floatToHex::intToHex (uint32_t temp)
 }
 
 
-
-floatToHex fToH(1.0, 2.0, 2);
-void setup()
-{
-    // Open serial communications and wait for port to open:
-    Serial.begin(HARD_BAUD_RATE);
-}
-
-void loop()
-{
-    delay(1000);
-    //fToH.printParam();
-    uint32_t intf;
-    for (int i = 0; i < 100; i++){
-        delay (100);
-        intf = fToH.floatToInt(1.0 + i*0.01);
-        fToH.intToHex(intf);
-	Serial.print(1.0 + i*0.01);
-	Serial.print( "   ");
-        Serial.println(String(fToH.hexs));
-
-	//Serial.print( "   ");
-        //Serial.println(intf);
-    }	
-}
