@@ -1,3 +1,7 @@
 ./imu/build-uno
 ./autopilot/myArduPilot1.0/build-uno
 ./gcs/interfaQueue.pyc
+./autopilot/Arduino.mk
+./autopilot/build-uno
+./autopilot/Common.mk
+./autopilot/Makefile
