@@ -8,6 +8,7 @@
  *       https://github.com/leomil72/swRTC
  *       http://www.leonardomiliani.com/en/2011/swrtc-un-orologio-in-tempo-reale-via-software/
  *       http://www.tigoe.com/pcomp/code/controllers/real-time-systems-and-operating-systems/
+ *       http://bleaklow.com/2010/07/20/a_very_simple_arduino_task_manager.html
  * */
 
 
@@ -27,7 +28,7 @@ Tarea::Tarea(uint32_t interval_){
 
 bool Tarea::ejecutar (){
     if ((uint32_t)(millis() - millis_0) >= interval) {
-        millis_0 = (uint32_t) millis();
+        millis_0 = (uint32_t)millis();
         return true;
     } else {
         return false;  
