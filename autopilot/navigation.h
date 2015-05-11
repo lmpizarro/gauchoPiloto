@@ -18,12 +18,24 @@
 * <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEFS_H_
-#define DEFS_H_
+// REFS: http://tom.pycke.be/mav/101/circle-navigation
+// http://www.deanandara.com/Argonaut/Sensors/Gps/GettingData.html
 
-const int HARD_BAUD_RATE = 9600;
-const int MAX_BYTES  = 4;
-//const int LONG_BUFFER_RX_GCS = 33;
-const int LONG_BUFFER_RX_GPS = 128;
+#ifndef NAVIGATION_H_
+#define NAVIGATION_H_
 
-#endif /*DEFS_H_*/
+#include "nav_point.h"
+#include <stdint.h>
+
+class Navigation{
+    public:
+	uint32_t distance (Nav_Point ,Nav_Point);    
+	float bearing (Nav_Point ,Nav_Point);    
+        Navigation ();
+	float calc_turn (float);
+	float b_current;
+    private:
+        static const uint32_t R;
+};
+
+#endif /* NAVIGATION_H_*/

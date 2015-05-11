@@ -1,14 +1,14 @@
 /*
 * Copyright (C) 2015 Luis Maria Pizarro <lmpizarro@gmail.com>
 *
-* This file is part of paparazzi.
+* This file is part of gauchopiloto.
 *
-* paparazzi is free software; you can redistribute it and/or modify
+* gauchopiloto is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 2, or (at your option)
 * any later version.
 *
-* paparazzi is distributed in the hope that it will be useful,
+* gauchopiloto is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
@@ -25,6 +25,7 @@
 #include "multiTareas.h"
 #include "BufferRx.h"
 #include "gps.h"
+#include "navigation.h"
 
 floatToHex fToH(1.0, 2.0, 2);
 floatToHex yaw(1.0, 2.0, 2);
@@ -35,6 +36,12 @@ PID  c2(1,1,1);
 PID  c3(1,1,1);
 BufferRx  b_rx('#', '!');   // 10 = 0x0A = LF
 Gps  gnav;
+
+Nav_Point wp1(50,50,100);
+Nav_Point wp2(51,51,200);
+Navigation nv;
+
+
 
 unsigned long intervalSOH=1000;  // the time we need to wait
 unsigned long intervalControl=100;  // the time we need to wait

@@ -18,12 +18,20 @@
 * <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DEFS_H_
-#define DEFS_H_
+#ifndef NAV_POINT_H_
+#define NAV_POINT_H_
 
-const int HARD_BAUD_RATE = 9600;
-const int MAX_BYTES  = 4;
-//const int LONG_BUFFER_RX_GCS = 33;
-const int LONG_BUFFER_RX_GPS = 128;
+class Nav_Point{
+    private:
+	float lat;
+	float lon;
+	float alt;
+    public:
+	Nav_Point (float, float, float);
+	float get_lat ();
+	float get_lon ();
+	float grad_to_rad (float);
+};
 
-#endif /*DEFS_H_*/
+
+#endif /* NAV_POINT_H_*/
