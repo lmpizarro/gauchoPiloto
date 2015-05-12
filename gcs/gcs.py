@@ -1,93 +1,44 @@
 # -*- coding: utf-8 -*-
+#/usr/bin/python
 
-"""
-Pygame Tutorial 2 -- Setting up pygame
+'''
 
-Collin 'Keeyai' Green
-http://muagames.com
-Version 1.0.0  ---  2009-11-07
-License: Public Domain
-
-http://muagames.com/tutorials/pygame-2-the-basics/
-
-"""
-
+'''
 
 try:
-    import pygame, sys, os, math
+    import pygame
+    import sys
+    import queueInterface
     from pygame.locals import *
-    import interfaQueue
 except ImportError, err:
     print ("%s Failed to Load Module: %s" % (__file__, err))
     import sys
     sys.exit(1)
+'''
+  # Define some colors
+'''
+black = (0, 0, 0)
+white = (255, 255, 255)
+blue = (50, 50, 255)
+green = (0, 255,   0)
+dkgreen = (0, 100, 0)
+red = (255, 0, 0)
+purple = (0xBF, 0x0F, 0xB5)
+brown = (0x55, 0x33, 0x00)
 
+DELAY_KEY = 4
 
-# Define some colors
-black    = (   0,   0,   0)
-white    = ( 255, 255, 255)
-blue     = (  50,  50, 255)
-green    = (   0, 255,   0)
-dkgreen  = (   0, 100,   0)
-red      = ( 255,   0,   0)
-purple   = (0xBF,0x0F,0xB5)
-brown    = (0x55,0x33,0x00)
+class Proccess_Joystick:
+    def __init__(self, queue):
+	self.queue = queue    
+        pygame.joystick.init()
+	self.deltaX = 0
+	self.deltaY = 0
 
-
-
-class GCS(object):
-    """Our game object! This is a fairly simple object that handles the
-    initialization of pygame and sets up our game to run."""
-
-    def __init__(self, queue, width = 640, height = 480):
-        """Called when the the Game object is initialized. Initializes
-        pygame and sets up our pygame window and other pygame tools
-        that we will need for more complicated tutorials."""
-
-        # load and set up pygame
-        pygame.init()
-
-        self.width = width
-	self.height = height
-	self.queue = queue
-	self.caption = 'Estación de Control'
-
-
-        # create our window
-        self.window = pygame.display.set_mode((self.width, self.height))
-        #self.window = pygame.display.set_mode((1024, 768), FULLSCREEN)
- 
-        self.initScreen()
-
-        self.initJoystick()
-
-        # clock for ticking
-        self.clock = pygame.time.Clock()
-
-        # set the window title
-        pygame.display.set_caption(self.caption)
-
-        # tell pygame to only pay attention to certain events
-        # we want to know if the user hits the X on the window, and we
-        # want keys so we can close the window with the esc key
-        pygame.event.set_allowed([QUIT, KEYDOWN])
-
-
-    def initScreen (self):
-        self.window.fill(purple)
-        pygame.draw.rect(self.window, green,[0,0,self.width/3,self.width/3],0)
-        pygame.draw.line(self.window, white, (self.width/6, 0), (self.width/6, self.width/3))
-        pygame.draw.line(self.window, white, (0, self.width/6), (self.width/3, self.width/6))
-        pygame.draw.rect(self.window, blue,[0,self.height-40,self.width, self.height],0)
-
-
-    def initJoystick(self):
         try: # init joystick
             self.joy = []
             self.sticks = []
         
-            pygame.joystick.init() # init main joystick device system
-       
 	    if (pygame.joystick.get_count()) == 0:
 		   print ("No hay joystick");
 
@@ -114,38 +65,10 @@ class GCS(object):
 	    print (msg)
             joy = 'False'
 
-
-
-    def run(self):
-        """Runs the game. Contains the game loop that computes and renders
-        each frame."""
-
-        print 'Starting Event Loop'
-
-        running = True
-        # run until something tells us to stop
-        while running:
-
-            # tick pygame clock
-            # you can limit the fps by passing the desired frames per seccond to tick()
-            self.clock.tick(25)
-
-            # handle pygame events -- if user closes game, stop running
-            running = self.handleEvents()
-
-            # update the title bar with our frames per second
-            pygame.display.set_caption(self.caption + ' %d fps' % self.clock.get_fps())
-
-            # render the screen, even though we don't have anything going on right now
-            pygame.display.flip()
-
-        pygame.joystick.quit()
-        print 'Quitting. Thanks for playing'
-
-
-    def handleEvents(self):
+    def process(self, event):
         """Poll for PyGame events and behave accordingly. Return false to stop
         the event loop and end the game."""
+	self.event = event
 
      	# wait 10ms - this is arbitrary, but wait(0) still resulted
      	# in 100% cpu utilization
@@ -165,25 +88,195 @@ class GCS(object):
                 msg = [ 'button', event.joy, event.button, 1 ] # JOYBUTTONDOWN
             elif event.type == JOYBUTTONUP: # 11
                 msg = [ 'button', event.joy, event.button, 0 ] # JOYBUTTONUP
-                
-            if event.type == QUIT:
-                return False
-
-            # handle user input
-            elif event.type == KEYDOWN:
-                # if the user presses escape, quit the event loop.
-                if event.key == K_ESCAPE:
-		# quitting
-                    return False
-
+ 
 	    if msg is not None:
 		print ("enviado", msg )
 		pass
         return True
 
 
-# create a gcs and run it
-if __name__ == '__main__':
-    queue = interfaQueue.fromHmiToQueue ("hmiState")	
-    game = GCS(queue, 800, 600)
-    game.run()
+class Proccess_Key:
+    def __init__ (self, queue):
+        self.timeKey = 0
+        self.DELAY_KEY = DELAY_KEY
+	self.deltaX = 0
+	self.deltaY = 0
+	self.queue = queue
+        pass
+
+    def process(self, event):
+        self.timeKey += 1
+	self.event = event
+
+        if self.timeKey % self.DELAY_KEY == 0:
+            keyState = pygame.key.get_pressed()
+            #
+            # if keyState[pygame.K_UP] or keyState[pygame.K_DOWN] or
+            #             keyState[pygame.K_LEFT] or keyState[pygame.K_RIGHT]:
+            #   print (self.deltaX, self.deltaY)
+            # elif keyState[pygame.K_KP0] or keyState[pygame.K_0]:
+            #   print (self.deltaX, self.deltaY)
+            #
+            if keyState[pygame.K_UP]:
+                self.deltaY += 1
+            elif keyState[pygame.K_DOWN]:
+                self.deltaY -= 1
+            elif keyState[pygame.K_LEFT]:
+                self.deltaX -= 1
+            elif keyState[pygame.K_RIGHT]:
+                self.deltaX += 1
+            elif keyState[pygame.K_KP0]:
+                self.deltaX = self.deltaY = 0
+            elif keyState[pygame.K_0]:
+                self.deltaX = self.deltaY = 0
+            else:
+                pass
+                '''
+                if self.deltaX != 0 and self.deltaX < 0:
+                    self.deltaX += 1
+                elif self.deltaX != 0 and self.deltaX > 0:
+                    self.deltaX -= 1
+
+                if self.deltaY != 0 and self.deltaY < 0:
+                    self.deltaY += 1
+                elif self.deltaY != 0 and self.deltaY > 0:
+                    self.deltaY -= 1
+                '''    
+            self.queue.mensajeToQueue = (self.deltaX, self.deltaY)
+
+
+class App:
+    def __init__(self, queue, control, caption="test app", width=640, height=480):
+        self.width = width
+        self.height = height
+        self.caption = caption
+        self._running = True
+        self.window_surf = None
+        self.size = self.width, self.height
+        self.queue = queue
+	self.control = control
+	self.pygame = None
+
+    def initApp(self):
+        self.pygame = pygame.init()
+        self.clock = pygame.time.Clock()
+        self.deltaX = 0
+        self.deltaY = 0
+        pygame.display.set_caption(self.caption)
+        self.window_surf = pygame.display.set_mode(
+            self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
+        # clock for ticking
+        # set the window title
+        self.window_surf.fill(purple)
+
+        self._running = True
+
+    def getPygame (self):
+	return self.pygame
+
+    def drawBackGround(self):
+        # fondo del puntero
+        pygame.draw.rect(self.window_surf, green,
+                         [0, 0, self.width/3, self.width/3], 0)
+        pygame.draw.line(self.window_surf, white,
+                         (self.width/6, 0), (self.width/6, self.width/3))
+        pygame.draw.line(self.window_surf, white,
+                         (0, self.width/6), (self.width/3, self.width/6))
+        # base de la pantalla
+        pygame.draw.rect(self.window_surf,
+                         blue, [0, self.height-40, self.width, self.height], 0)
+
+    def on_event(self, event):
+        if event.type == pygame.QUIT:
+            self._running = False
+        elif event.type == KEYDOWN:
+            # if the user presses escape, quit the event loop.
+            if event.key == K_ESCAPE:
+                # quitting
+                self._running = False
+            elif event.key == K_q:
+                self._running = False
+            '''
+            elif event.key == pygame.K_DOWN:
+                self.deltaY -= 1
+                print ("key down")
+
+            elif event.key == pygame.K_UP:
+                self.deltaY += 1
+                print ("key UP")
+
+            elif event.key == pygame.K_LEFT:
+                self.deltaX -= 1
+                print ("key LEFT")
+
+            elif event.key == pygame.K_RIGHT:
+                self.deltaX += 1
+                print ("key RIGHT")
+            elif event.key == pygame.K_0 or event.key == pygame.K_KP0:
+                self.deltaX = self.deltaY = 0
+                print ("key 0")
+                '''
+        elif event.type == pygame.MOUSEMOTION:
+            x, y = event.pos
+            print "mouse at (%d, %d)" % (x, y)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if pygame.mouse.get_pressed()[0] == 1:
+                print ("Botón izquierdo en (%d, %d)" % event.pos)
+            elif pygame.mouse.get_pressed()[0] == 0:
+                print ("Botón derecho en (%d, %d)" % event.pos)
+
+    def drawPointer(self):
+        x = self.width/6
+        y = self.width/6
+        pygame.draw.rect(self.window_surf, white,
+                         [x-10 + self.control.deltaX, y-5 + self.control.deltaY, 20, 10], 0)
+        pygame.draw.circle(self.window_surf, purple,
+                           (x + self.control.deltaX, y + self.control.deltaY), 5)
+
+    def drawTextBase(self):
+        estado = " X: " + str(self.control.deltaX) + " Y: " + str(self.control.deltaY)
+        font = pygame.font.Font(None, 20)
+        text = font.render(estado, 1, white)
+        self.window_surf.blit(text, (10, 450))
+
+# on_loop
+    def on_loop(self):
+        pass
+
+# on_render
+    def on_render(self):
+        self.drawBackGround()
+        self.drawPointer()
+        self.drawTextBase()
+        pygame.display.flip()
+
+# on_cleanup
+    def on_cleanup(self):
+        print ("Bye!!")
+        pygame.quit()
+
+# on_execute
+    def run(self):
+        if self.initApp() is False:
+            self._running = False
+        '''
+        # you can limit the fps by passing the desired
+        # frames per seccond to tick()
+        '''
+        self.clock.tick(25)
+
+        while(self._running):
+            for event in pygame.event.get():
+                self.control.process(None)
+                self.on_event(event)
+            self.on_loop()
+            self.on_render()
+        self.on_cleanup()
+
+# main
+if __name__ == "__main__":
+    queueJ = queueInterface.QueueInterface("mensajeJ", "localhost")
+    control = Proccess_Key(queueJ)
+    control2 = Proccess_Joystick(queueJ)
+    theApp = App(queueJ, control2, "mi app", 640, 480)
+    theApp.run()
