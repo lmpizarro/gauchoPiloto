@@ -66,7 +66,7 @@ Distributed as-is; no warranty is given.
 #include <Wire.h>
 #include "I2Cdev.h"
 #include "SoftwareSerial.h"
-#include "TinyGPS.h"
+#include "../autopilot/gps.h"
 #include "AHRS.h"
 #include "MPU6050_9Axis_MotionApps41.h"
 
@@ -102,7 +102,7 @@ float ax, ay, az, gx, gy, gz, mx, my, mz; // variables to hold latest sensor dat
 float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    // vector to hold quaternion
 //float eInt[3] = {0.0f, 0.0f, 0.0f};       // vector to hold integral error for Mahony method
 
-TinyGPS gps;
+Gps gps;
 AHRS    ahrs;
 SoftwareSerial ss(4, 3);
 // Declare device MPU6050 class
@@ -166,12 +166,12 @@ void loop()
     // read raw accel/gyro measurements from device
   float flat, flon, alt, course, speed;
 
-
+  /*
   gps.f_get_position(&flat, &flon, &age);
   alt = gps.f_altitude();
   course = gps.f_course();
   speed = gps.f_speed_kmph() / 3.6;
-
+ */
 
   if(mpu.getIntDataReadyStatus() == 1) { // wait for data ready status register to update all data registers
      mcount++;

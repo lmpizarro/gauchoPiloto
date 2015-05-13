@@ -20,7 +20,7 @@
 
 #ifndef GPS_H_
 #define GPS_H_
-
+#include "defs.h"
 
 class Gps {
     public:
