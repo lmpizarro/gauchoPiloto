@@ -28,21 +28,35 @@ class Gps {
 	void cpRxBuffer (char *);
 	void parse_nema_sentence ();
     private:
+        void parse_nema_gga();
+        void parse_nema_rmc();
 	uint8_t checksum();
         static const char *gp_rmc;
         static const char *gp_gga;
         static const char *c_sepr;
-	float lat;
-	float lon;
-	float alt;
 	float spe;
 	float acc;
 	float heada;
 	char nema_sentence[LONG_BUFFER_RX_GPS];
+        long utc;
+        double lat;
+        char status;
+        char  ns;
+        double lon;
+        char  ew;
+        unsigned char  qua;
+        unsigned char  nsat;
+        double hdop;
+        double alt_msl;
+        double height_geoid;
+        double track;
+        double speed;
+        char *rest;
+	char *token;
 };
 
-const char *Gps::gp_rmc="GPRMC";
-const char *Gps::gp_gga="GPGGA";
+const char *Gps::gp_rmc="$GPRMC";
+const char *Gps::gp_gga="$GPGGA";
 const char *Gps::c_sepr=",";
 
 Gps::Gps(){
@@ -61,104 +75,98 @@ void Gps::cpRxBuffer(char *rxBuffer){
     }	
 }
 
-void Gps::parse_nema_sentence(){
-    char  test[] = "$GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A";
-    char  gga [] = "$GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47";
-    char *rest, *token;
+void Gps::parse_nema_gga(){
 
-    long utc;
-    double lat;
-    char status;
-    char  ns;
-    double lon;
-    char  ew;
-    unsigned char  qua;
-    unsigned char  nsat;
-    double hdop;
-    double alt_msl;
-    double height_geoid;
-    double track;
-    double speed;
-    rest = gga;
-    token = strtok_r(rest, ",", &rest);
-    if (token = "$GPGGA"){
-
-
-        token = strtok_r(rest, ",", &rest);
+        token = strtok_r(rest, c_sepr, &rest);
         utc = strtol (token, NULL, 10);
 
-        token = strtok_r(rest, ",", &rest);
+        token = strtok_r(rest, c_sepr, &rest);
         status = token[0];
-        token = strtok_r(rest, ",", &rest);
+        token = strtok_r(rest, c_sepr, &rest);
         lat = strtod(token, NULL);
 
-        token = strtok_r(rest, ",", &rest);
+        token = strtok_r(rest, c_sepr, &rest);
         ns = token[0];
 
-        token = strtok_r(rest, ",", &rest);
+        token = strtok_r(rest, c_sepr, &rest);
         lon = strtod (token,NULL);
 
-        token = strtok_r(rest, ",", &rest);
+        token = strtok_r(rest, c_sepr, &rest);
         ew = token[0];
 
-        token = strtok_r(rest, ",", &rest);
+        token = strtok_r(rest, c_sepr, &rest);
         speed = strtod (token,NULL);
 
-        token = strtok_r(rest, ",", &rest);
+        token = strtok_r(rest, c_sepr, &rest);
         track = strtod (token,NULL);
 
-    } else {
-    
-        if (token = "$GPRMC"){
 
-            token = strtok_r(rest, ",", &rest);
+}
+
+void Gps::parse_nema_rmc(){
+
+            token = strtok_r(rest, c_sepr, &rest);
 	    utc = strtol (token, NULL, 10);
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
 	    //lat = strtod(token, NULL);
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
 	    //ns = token[0];
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
 	    //lon = strtod (token,NULL);
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
 	    //ew = token[0];
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
 	    qua = strtol(token, NULL, 10);
 
             token = strtok_r(rest, ",", &rest);
 	    nsat = strtol(token, NULL, 10);
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
             if (token != NULL){
 	        hdop = strtod (token,NULL);
             }
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
             if (token != NULL){
 	        alt_msl = strtod (token,NULL);
 	    }
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
             if (token != NULL){
 	        height_geoid = strtod (token,NULL);
 	    }
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
             if (token != NULL){
 	        height_geoid = strtod (token,NULL);
 	    }
 
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
 
-            token = strtok_r(rest, ",", &rest);
+            token = strtok_r(rest, c_sepr, &rest);
+
+}
+
+void Gps::parse_nema_sentence(){
+
+    char  gga [] = "$GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47";
+    char  test[] = "$GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A";
 
 
-
+    rest = gga;
+    token = strtok_r(rest, ",", &rest);
+    if (token == gp_gga){
+        parse_nema_gga();
+    } else {
+    
+        if (token == gp_rmc){
+            parse_nema_rmc();   
 	}
     
     } 
