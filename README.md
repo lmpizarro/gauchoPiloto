@@ -8,5 +8,5 @@ Distributed Control Systems
 # References
 
 ## GPS
- ### http://www.gpsinformation.org/dale/nmea.htm
+ *  NMEA data [link] (http://www.gpsinformation.org/dale/nmea.htm)
 
