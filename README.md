@@ -3,9 +3,11 @@ An Arduino autopilot variant.
 
 Why a new autopilot? Why not?
 
-Sensors independent from controller an actuators
+## IMU (Inertial Measurement Unit) 
 
-Distributed Control Systems
+Imu sensors independent from controller an actuators
+
+## Distributed Control Systems
 
 # References
 
@@ -16,10 +18,12 @@ Distributed Control Systems
  * Ardupilot | Open Source Autopilot [link](http://wiki.paparazziuav.org)
  * Erlerobotics | Linux Robots | BeagleBone  [link](http://erlerobotics.com/blog/home-creative/)
  * Openpilot  The Next Generation Open Source UAV Autopilot [link](https://www.openpilot.org/)
-
+ * PX4 Autopilot [link](https://pixhawk.org)
+ * DIY Drones The Leading Community for Personal UAVs [link](http://diydrones.com/)
+ * gentlenav Firmware for Bill Premerlani's IMU based UAV Dev Board autopilots [link](https://code.google.com/p/gentlenav/)
 
 
 ## GPS
 
- *  NMEA data [link] (http://www.gpsinformation.org/dale/nmea.htm)
+ *  For parsing NMEA sentence. NMEA data [link] (http://www.gpsinformation.org/dale/nmea.htm)
 
