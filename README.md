@@ -26,9 +26,17 @@ Imu sensors independent from controller an actuators
 ## GPS
 
  *  For parsing NMEA sentence. NMEA data [link] (http://www.gpsinformation.org/dale/nmea.htm)
+ *  NMEA Library [link](http://nmea.sourceforge.net/)
+ *  QGIS API Documentation [link](http://qgis.org/api/struct__nmeaINFO.html)
+
+### Navigation
+ * Course, track, route and heading [link](http://en.wikipedia.org/wiki/Course_%28navigation%29)
 
 ## IMUs
  * Ardu-imu [link](https://code.google.com/p/ardu-imu/wiki/ArduIMUV4)
  * Freeimu [link](http://www.varesano.net/topic/freeimu)
- * x-IMU   [link](http://www.x-io.co.uk/) 
+ * x-IMU   [link](http://www.x-io.co.uk/)
+ * FreIMU-Update [link](https://github.com/mjs513/FreeIMU-Updates)
 
+## Serial Communications
+  * arduino-buffered-serial A buffered, interrupt driven, serial manager for Arduino [link](https://code.google.com/p/arduino-buffered-serial/) 

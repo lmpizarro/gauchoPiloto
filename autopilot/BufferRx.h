@@ -19,18 +19,20 @@
 */
 
 class BufferRx {
+    public:
+        BufferRx(Stream& s);
+	void set_limits(char, char);
+        void recMsg ();
+        uint8_t hasMsg();
+        void reset();
     private:
+	Stream& serial;
         char buffer_rx [LONG_BUFFER_RX_GPS];
         uint8_t flag_init;
         uint8_t flag_end;
         uint8_t pointer;
 	char init_p;
 	char end_p;
-    public:
-        BufferRx(char, char);
-        void recMsg ();
-        uint8_t hasMsg();
-        void reset();
 };
 
 void BufferRx::reset(){
@@ -43,12 +45,15 @@ uint8_t BufferRx::hasMsg(){
     return flag_init * flag_end;
 }
 
-BufferRx::BufferRx(char init_, char end_){
+void BufferRx::set_limits(char init_, char end_){
+    init_p = init_;
+    end_p = end_;
+}
+
+BufferRx::BufferRx(Stream& s):serial(s){
     flag_init = 0;
     pointer = 0;
     flag_end = 0;
-    init_p = init_;
-    end_p = end_;
 }
 
 void BufferRx::recMsg ()
@@ -56,11 +61,11 @@ void BufferRx::recMsg ()
     uint16_t charAvail;
     char incomingChar;
 
-    charAvail = Serial.available();
+    charAvail = serial.available();
 
     while(charAvail>0){
 
-            incomingChar = Serial.read();
+            incomingChar = serial.read();
 
 
             if (incomingChar == init_p && !flag_init && !pointer){

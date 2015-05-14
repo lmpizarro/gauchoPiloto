@@ -34,7 +34,7 @@ floatToHex roll(1.0, 2.0, 2);
 PID  c1(1,1,1);
 PID  c2(1,1,1);
 PID  c3(1,1,1);
-BufferRx  b_rx('#', '!');   // 10 = 0x0A = LF
+BufferRx  b_rx(Serial); //   // 10 = 0x0A = LF
 Gps  gnav;
 
 Nav_Point wp1(50,50,100);
@@ -54,6 +54,7 @@ void setup()
 {
     // Open serial communications and wait for port to open:
     Serial.begin(HARD_BAUD_RATE);
+    b_rx.set_limits('#', '!');
 }
 
 

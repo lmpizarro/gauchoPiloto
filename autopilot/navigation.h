@@ -29,9 +29,9 @@
 
 class Navigation{
     public:
+        Navigation ();
 	uint32_t distance (Nav_Point ,Nav_Point);    
 	float bearing (Nav_Point ,Nav_Point);    
-        Navigation ();
 	float calc_turn (float);
 	float b_current;
     private:

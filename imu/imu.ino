@@ -164,14 +164,14 @@ void loop()
 
   unsigned long age, date, time, chars = 0;
     // read raw accel/gyro measurements from device
-  float flat, flon, alt, course, speed;
+  float flat, flon, alt, course, speed_ms;
 
   /*
   gps.f_get_position(&flat, &flon, &age);
   alt = gps.f_altitude();
   course = gps.f_course();
-  speed = gps.f_speed_kmph() / 3.6;
- */
+  */
+  speed_ms = gps.get_speed_ms();
 
   if(mpu.getIntDataReadyStatus() == 1) { // wait for data ready status register to update all data registers
      mcount++;

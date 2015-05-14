@@ -12,7 +12,7 @@ class AHRS
           void MahonyQuaternionUpdate(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz);
 	private:
           // gyroscope measurement error in rads/s (shown as 3 deg/s)
-	  const float  GyroMeasError =PI * (40.0f / 180.0f);
+	  const float  GyroMeasError = PI * (40.0f / 180.0f);
 	  const float beta   = sqrt(3.0f / 4.0f) * GyroMeasError;   // compute beta
 	  float  ax, ay, az;
 	  float  gx, gy, gz;
