@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block search_form %}
+{% endblock %}
+
+{% block right_drop_down %}
+{% endblock %}
+
+{% block left_drop_down %}
+{% endblock %}
+
+
+{% block logout_block %}
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{url_for('.static', filename='css/mystyle.css')}}">
+{% endblock %}
+
+{% block content %}
+{{util.flashed_messages()}}
+<div class="container">
+
+    <h3>{{ pageInfo.title }}</h3>
+    {% for p in paragraph %}
+	   <p>{{ p }}</p>
+    {% endfor %}
+
+    {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}, extra_classes="form-signin") }}
+
+    
+</div>
+{% endblock %}
+
+{% block head %}
+{{super()}}
+{{fixes.ie8()}}
+{% endblock %}

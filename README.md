@@ -38,5 +38,8 @@ Imu sensors independent from controller an actuators
  * x-IMU   [link](http://www.x-io.co.uk/)
  * FreIMU-Update [link](https://github.com/mjs513/FreeIMU-Updates)
 
+## Coordinate Systems
+ * UAV DevBoard Coordinate Systems [link](https://code.google.com/p/gentlenav/wiki/UDBCoordinateSystems)
+
 ## Serial Communications
   * arduino-buffered-serial A buffered, interrupt driven, serial manager for Arduino [link](https://code.google.com/p/arduino-buffered-serial/) 
