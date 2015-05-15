@@ -5,3 +5,4 @@
 ./autopilot/build-uno
 ./autopilot/Common.mk
 ./autopilot/Makefile
+*.pyc
