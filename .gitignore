@@ -6,3 +6,4 @@
 ./autopilot/Common.mk
 ./autopilot/Makefile
 *.pyc
+./gcs/webGCS/gcs/__init__.pyc

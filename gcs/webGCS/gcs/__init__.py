@@ -27,13 +27,6 @@ class LoginForm(Form):
     password = TextField('password', [validators.required()])
     submit_button = SubmitField('Submit Form')
 
-class ContactForm(Form):
-    email = TextField('email', [validators.required()])
-    name = TextField('name', [validators.required()])
-    phone = TextField('phone', [validators.required()])
-    message = TextField('message', [validators.required()])
-    submit_button = SubmitField('Submit Form')
-
 class page_props ():
     def __init__(self, title, pageType):
 	self.title = title
@@ -68,6 +61,8 @@ def create_app(configfile=None):
     app.config['RECAPTCHA_PUBLIC_KEY'] = \
         '6Lfol9cSAAAAADAkodaYl9wvQCwBMr3qGR_PPHcw'
 
+
+
     @app.route('/random_gen')
     def random_gen():
 	print "hi"    
@@ -97,22 +92,6 @@ def create_app(configfile=None):
         if session['logged_in'] != True:
              return redirect(url_for('index'))
         return render_template("main_app.html", paragraph=paragraph, pageInfo=page_info)
-
-    @app.route('/contact')
-    def contact():
-
-        title = u'Contacto'
-        paragraph = [u'Acá va un formulario de contacto']
-
-        pageType = 'contact'
-
-	page_info['title'] = title
-	page_info['page_type'] = pageType
-        form = ContactForm()
-	try:    
-            return render_template("contact.html", paragraph=paragraph, pageInfo=page_info, form=form)
-        except Exception, e:
-	    return str(e)
 
 
 

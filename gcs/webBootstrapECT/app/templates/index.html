@@ -1,0 +1,210 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/fixes.html" as fixes %}
+{% import "bootstrap/utils.html" as util %}
+
+
+{% block head %}
+    {{super()}}
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <style>
+	    #map {
+		    /*
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+	    right: 0;
+	    */
+	    height: 600px;
+	    width:  650px;
+    }
+
+    body {
+    
+    background-color: #007;
+    }
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="{{url_for('.static', filename='jQuery-Flight-Indicators-master/_examples_data/prism/prism.css')}}">
+<!-- This page style -->
+<!--link rel="stylesheet" type="text/css" href="{{url_for('.static', filename='jQuery-Flight-Indicators-master/_examples_data/style.css')}}" -->
+<!-- Flight Indicators library styles -->
+<link rel="stylesheet" type="text/css" href="{{url_for('.static', filename='jQuery-Flight-Indicators-master/css/flightindicators.css')}}">
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+
+
+
+<script type="text/javascript">
+    var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>  
+
+<script src="http://sebmatton.github.io/flightindicators/examples_data/prism/prism.js"></script>
+<script src="{{url_for('.static', filename='jQuery-Flight-Indicators-master/js/jquery.flightindicators.js')}}"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet-src.js"></script>
+<script src="{{url_for('.static', filename='js/leaflet-realtime.js')}}"></script>
+
+<script type="text/javascript">
+var map = L.map('map'),
+    realtime = L.realtime({
+        //url: 'http://wanderdrone.appspot.com/',
+        url: $SCRIPT_ROOT + 'random_gen',
+        crossOrigin: true,
+        type: 'json'
+    }, {
+        interval: 1000
+    }).addTo(map);
+
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+//L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+//   maxZoom: 18,
+//   attribution: 'Map data &contentpy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+//       '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+//       'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+//   id: 'examples.map-20v6611k'
+//}).addTo(map);
+
+
+realtime.on('update', function() {
+    map.fitBounds(realtime.getBounds(), {maxZoom: 12});
+});
+
+var source = new EventSource( $SCRIPT_ROOT +  '/attitude_heading');
+source.onmessage = function (event) {
+	     ah = JSON.parse(event.data)
+
+	    // Attitude update
+	    attitude.setRoll(parseFloat(ah.roll));
+	    attitude.setPitch(parseFloat(ah.pitch));
+	        // Heading update
+	    heading.setHeading(parseFloat(ah.heading));
+	    console.log(ah.pitch);
+
+	       // Vario update
+	    //variometer.setVario(2*Math.sin(increment/10));
+			        
+	     // Airspeed update
+	    //airspeed.setAirSpeed(80+80*Math.sin(increment/10));
+				        
+	    // Altimeter update
+	    //altimeter.setAltitude(10*increment);
+        //altimeter.setPressure(1000+3*Math.sin(increment/50));
+
+};
+
+
+
+</script> 
+
+<!-- Let start our scripts -->
+<script type="text/javascript">
+	// First static example
+	var first_attitude = $.flightIndicator('#first_attitude', 'attitude', {size:200, roll:8, pitch:3, showBox : true});
+	// Dynamic examples
+	var attitude = $.flightIndicator('#attitude', 'attitude', {roll:50, pitch:-20, size:200, showBox : true});
+	var heading = $.flightIndicator('#heading', 'heading', {heading:150, showBox:true});
+	var variometer = $.flightIndicator('#variometer', 'variometer', {vario:-5, showBox:true});
+	var airspeed = $.flightIndicator('#airspeed', 'airspeed', {showBox: false});
+	var altimeter = $.flightIndicator('#altimeter', 'altimeter');
+
+	// Update at 20Hz
+	var increment = 0;
+	setInterval(function() {
+			        
+	    increment+= 0.1;
+    }, 50);
+  </script>
+
+
+
+{% endblock %}
+
+{% block navbar %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+	  <div class="col-md-6"> 
+		     <!-- espacio vacio -->
+	  </div>
+	  <div class="col-md-6"> 
+	  
+		     <!-- espacio vacio -->
+	  </div>
+  </div> <!-- cierra 1era row Arriba -->
+
+<div class="row">
+  <div class="col-md-3">
+
+    <div class="row">
+      <div class="col-md-3">
+   	  <!-- The block where we want to place an indicator -->
+         <span id="attitude"></span>
+       </div>
+     </div>
+
+     <div class="row">
+       <div class="col-md-3">
+	        <span id="heading"></span>
+       </div>
+     </div>
+
+     <div class="row">
+	     <div class="col-md-3">
+	        <span id="airspeed"></span>
+	     </div>
+     </div>
+</div>  <!-- col-md-3 -->
+
+<div class="col-md-6"> 
+	<div id="map"> </div> 
+</div>
+
+<div class="col-md-3">  <!-- columna derecha -->
+     <div class="row">
+
+	     <div class="col-md-3">
+	        <span id="altimeter"></span>
+	     </div>
+
+     </div>
+
+     <div class="row">
+
+	     <div class="col-md-3">
+	        <span id="variometer"></span>
+	     </div>
+
+     </div>
+
+     <div class="row">
+
+	     <div class="col-md-3">
+		     <!-- espacio vacio -->
+	     </div>
+
+     </div>
+
+   </div>  <!-- fin columna derecha -->
+ </div> <!-- cierra 2da row -->
+
+  <div class="row"> <!-- Abajo -->
+    <div class="col-md-12">  </div>
+  </div> <!-- Abajo -->
+
+</div> <!-- container-fluid -->
+
+
+{% endblock %}

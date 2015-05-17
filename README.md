@@ -43,3 +43,9 @@ Imu sensors independent from controller an actuators
 
 ## Serial Communications
   * arduino-buffered-serial A buffered, interrupt driven, serial manager for Arduino [link](https://code.google.com/p/arduino-buffered-serial/) 
+
+## Componentes Software
+ * Flask: a Python microframework based on Werkzeug [link](http://flask.pocoo.org/)
+ * Leaflet - a JavaScript library for mobile-friendly maps [link](http://leafletjs.com/)
+ * Flight Indicators jQuery plugin [link](https://github.com/sebmatton/jQuery-Flight-Indicators)
+ * Leaflet Realtime: Put realtime data on a Leaflet map: live tracking GPS units, sensor data [link](https://github.com/perliedman/leaflet-realtime)
