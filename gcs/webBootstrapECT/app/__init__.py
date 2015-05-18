@@ -1,36 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask
-from flask import render_template, flash
+from flask import render_template
 from flask_appconfig import AppConfig
 
 from flask_bootstrap import Bootstrap
 
-from flask import session
-from flask import request
-from flask import redirect
 from flask import url_for
 from flask import jsonify
 import flask
 
-
-app_title ="Demo App"
-brand = "ECT"
-page_info = {'app_title':app_title, 'Brand':brand}
-
-
+import random
 import navigation
-
-class page_props ():
-    def __init__(self, title, pageType):
-	self.title = title
-	self.page_type = pageType
-	pass    
-    
-    def run (self):
-	page_info['title'] = self.title
-	page_info['page_type'] = self.page_type
-	return page_info
 
 def create_app(configfile=None):
     app = Flask(__name__)
@@ -39,9 +20,6 @@ def create_app(configfile=None):
                                 # https://github.com/mbr/flask-appconfig
     Bootstrap(app)
 
-    title = "About this site"
-    pageType = 'about'
-    c_about = page_props(title, pageType)
     lat_lon = navigation.nav_data()
 
     # initialization 
@@ -60,7 +38,7 @@ def create_app(configfile=None):
         while True:
 	    time.sleep(1)
 	    print "event_stream"
-	    a = {"pitch":20, "roll": 0, "heading":23}
+	    a = {"pitch":0 + random.gauss(0,1), "roll": 0 + random.gauss(0,1), "heading":23 + + random.gauss(0,10)}
 	    yield 'data: %s\n\n' % json.dumps(a) 
 
     '''
@@ -72,29 +50,23 @@ def create_app(configfile=None):
     def stream():
         return flask.Response(event_att_head(), mimetype="text/event-stream")
 
-    @app.route('/random_gen')
-    def random_gen():
+    @app.route('/_gps_data')
+    def gps_data():
 	print "hi"    
-	ref_data = ref_data = lat_lon.get_nav_data()
+	ref_data = lat_lon.get_nav_data()
 	return jsonify(ref_data)
 
 
-    @app.route('/', methods=['GET', 'POST'])
+    @app.route('/')
     def main_app():
-	title = "Bienvenido!!"
-	paragraph = [u'']
-	
-	pageType = 'main_app' 
-
-	page_info['title'] = title
-	page_info['page_type'] = pageType
-        return render_template("index.html", paragraph=paragraph, pageInfo=page_info)
+        return render_template("index.html")
 
 
     return app
 
+'''
 if __name__ == '__main__':
     App = create_app()	
     App.debug = True
-    App.run(threaded=True)
-
+    #App.run()
+'''    

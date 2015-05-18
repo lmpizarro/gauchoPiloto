@@ -1,11 +1,4 @@
 {% extends "bootstrap/base.html" %}
-{% import "bootstrap/fixes.html" as fixes %}
-{% import "bootstrap/utils.html" as util %}
-
-
-{% block head %}
-    {{super()}}
-{% endblock %}
 
 {% block styles %}
     {{super()}}
@@ -30,9 +23,6 @@
 
 </style>
 
-<link rel="stylesheet" type="text/css" href="{{url_for('.static', filename='jQuery-Flight-Indicators-master/_examples_data/prism/prism.css')}}">
-<!-- This page style -->
-<!--link rel="stylesheet" type="text/css" href="{{url_for('.static', filename='jQuery-Flight-Indicators-master/_examples_data/style.css')}}" -->
 <!-- Flight Indicators library styles -->
 <link rel="stylesheet" type="text/css" href="{{url_for('.static', filename='jQuery-Flight-Indicators-master/css/flightindicators.css')}}">
 {% endblock %}
@@ -41,12 +31,10 @@
 {{super()}}
 
 
-
 <script type="text/javascript">
     var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>  
 
-<script src="http://sebmatton.github.io/flightindicators/examples_data/prism/prism.js"></script>
 <script src="{{url_for('.static', filename='jQuery-Flight-Indicators-master/js/jquery.flightindicators.js')}}"></script>
 <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet-src.js"></script>
 <script src="{{url_for('.static', filename='js/leaflet-realtime.js')}}"></script>
@@ -55,7 +43,7 @@
 var map = L.map('map'),
     realtime = L.realtime({
         //url: 'http://wanderdrone.appspot.com/',
-        url: $SCRIPT_ROOT + 'random_gen',
+        url: $SCRIPT_ROOT + '_gps_data',
         crossOrigin: true,
         type: 'json'
     }, {
@@ -108,6 +96,7 @@ source.onmessage = function (event) {
 
 <!-- Let start our scripts -->
 <script type="text/javascript">
+	
 	// First static example
 	var first_attitude = $.flightIndicator('#first_attitude', 'attitude', {size:200, roll:8, pitch:3, showBox : true});
 	// Dynamic examples
@@ -117,12 +106,7 @@ source.onmessage = function (event) {
 	var airspeed = $.flightIndicator('#airspeed', 'airspeed', {showBox: false});
 	var altimeter = $.flightIndicator('#altimeter', 'altimeter');
 
-	// Update at 20Hz
-	var increment = 0;
-	setInterval(function() {
-			        
-	    increment+= 0.1;
-    }, 50);
+
   </script>
 
 

@@ -13,5 +13,6 @@ from app import create_app
 
 # create an app instance
 app = create_app()
+app.debug = True
 
-app.run(debug=True)
+app.run(threaded=True)
