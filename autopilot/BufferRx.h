@@ -25,9 +25,9 @@ class BufferRx {
         void recMsg ();
         uint8_t hasMsg();
         void reset();
+        char buffer_rx [LONG_BUFFER_RX_GPS];
     private:
 	Stream& serial;
-        char buffer_rx [LONG_BUFFER_RX_GPS];
         uint8_t flag_init;
         uint8_t flag_end;
         uint8_t pointer;

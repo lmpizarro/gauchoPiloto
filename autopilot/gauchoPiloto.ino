@@ -18,29 +18,34 @@
 * <http://www.gnu.org/licenses/>.
 */
 
-
 #include "defs.h"
 #include "pid.h"
-#include "protocol.h"
+#include "float_to_int.h"
 #include "multiTareas.h"
 #include "BufferRx.h"
 #include "gps.h"
 #include "navigation.h"
+#include "codec_message.h"
 
-floatToHex fToH(1.0, 2.0, 2);
-floatToHex yaw(1.0, 2.0, 2);
-floatToHex pitch(1.0, 2.0, 2);
-floatToHex roll(1.0, 2.0, 2);
+floatToInt16 air_speed(1.0, 2.0);
+floatToInt16 yaw(1.0, 2.0);
+floatToInt16 pitch(1.0, 2.0);
+floatToInt16 roll(1.0, 2.0);
+
+BufferRx  b_rx(Serial); //   // 10 = 0x0A = LF
+
+decode_message dec_mess;
+encode_message enc_mess;
+
 PID  c1(1,1,1);
 PID  c2(1,1,1);
 PID  c3(1,1,1);
-BufferRx  b_rx(Serial); //   // 10 = 0x0A = LF
+
 Gps  gnav;
 
 Nav_Point wp1(50,50,100);
 Nav_Point wp2(51,51,200);
 Navigation nv;
-
 
 
 unsigned long intervalSOH=1000;  // the time we need to wait
@@ -63,35 +68,27 @@ void control_task (){
 
     uint32_t intf;
     if (Control.ejecutar()) {
-        i = i + 1; 
-	if (i > 100) i=0;
-        intf = fToH.floatToInt(1.0 + i*0.01);
-        fToH.intToHex(intf);
-        intf = yaw.floatToInt(1.0 + i*0.01);
-        yaw.intToHex(intf);
-        intf = pitch.floatToInt(1.0 + i*0.01);
-        pitch.intToHex(intf);
-        intf = roll.floatToInt(1.0 + i*0.01);
-        roll.intToHex(intf);
-
-	c1.update(1);
+    	c1.update(1);
 	c2.update(1);
 	c3.update(1);
 
-	//Serial.print(1.0 + i*0.01);
-	//Serial.print( "   ");
-        Serial.write(fToH.hexs);
-        Serial.write('\n');
-
-	//Serial.print( "   ");
-        //Serial.println(intf);
     }
 }
 
 void soh_task(){
     if (SOH.ejecutar()) {
-        Serial.write("---------------------SOH");
-        Serial.write('\n');
+    i = i + 1; 
+	if (i > 100) i=0;
+        enc_mess.num[0] = air_speed.floatToInt(1.0 + i*0.01);
+        enc_mess.num[1] = yaw.floatToInt(1.0 + i*0.01);
+        enc_mess.num[2] = pitch.floatToInt(1.0 + i*0.01);
+        enc_mess.num[3] = roll.floatToInt(1.0 + i*0.01);
+
+        enc_mess.set_ope(1);
+        enc_mess.set_buffer();
+
+	Serial.write (enc_mess.buffer_tx, LEN_MENSAJE_TIPO_1);
+	Serial.write ('\n');
     } 
 }
 
@@ -102,9 +99,11 @@ void loop()
     if (serRx.ejecutar()) {
         b_rx.recMsg ();
         if (b_rx.hasMsg()){
+            strcpy (dec_mess.mensaje, b_rx.buffer_rx);
+	    Serial.println(dec_mess.set_nums());
 	    b_rx.reset();
-            Serial.write("Hay dato");
-            Serial.write('\n');
+	    Serial.write("#0103eeee!");
+	    Serial.write('\n');
 	}
     }
 

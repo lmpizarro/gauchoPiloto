@@ -17,31 +17,26 @@
 * along with Paparazzi; see the file COPYING. If not, see
 * <http://www.gnu.org/licenses/>.
 */
-
-#ifndef PROTOCOL_H_
-#define PROTOCOL_H_
-
-#include "defs.h"
+#include "float_to_int.h"
 #include <stdint.h>
 
-class floatToHex
-{
-    private:
-        float minF;
-        float maxF;
-        uint32_t max_int;
-        float p;
-        float b;
-        uint32_t n_byteI;
-	char hexDigits [16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-    public:
-	char hexs[MAX_BYTES * 2 + 1];
-        floatToHex (float, float, uint32_t);
-        uint32_t floatToInt (float f);
-        void intToHex (uint32_t);
-};
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
 
 
+floatToInt16::floatToInt16 (float min_, float max_){
+    minF = min_;
+    maxF = max_;
+    n_byteI = 2;
+    uint16_t a = 1; 
+    max_int = (a << (n_byteI * 8)) -1;
+    p = (float) max_int /(maxF - minF);
+    b = - minF * p;
+
+}
+
+uint16_t floatToInt16::floatToInt (float f){
+  return MAX(0, MIN(f*p + b, max_int));
+}
 
 
-#endif /*PROTOCOL_H_*/
