@@ -14,7 +14,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with Paparazzi; see the file COPYING. If not, see
+* along with gauchoPiloto; see the file COPYING. If not, see
 * <http://www.gnu.org/licenses/>.
 */
 
@@ -48,25 +48,15 @@ Nav_Point wp2(51,51,200);
 Navigation nv;
 
 
-unsigned long intervalSOH=1000;  // the time we need to wait
-unsigned long intervalControl=100;  // the time we need to wait
-unsigned long intervalRx=5;  // the time we need to wait
+uint16_t intervalSOH=2000;  // the time we need to wait
+uint16_t intervalControl=20;  // the time we need to wait
+uint16_t intervalRx=50;  // the time we need to wait
 Tarea SOH(intervalSOH);
 Tarea Control(intervalControl);
-Tarea serRx (intervalRx);
+Tarea serRx(intervalRx);
+Tarea controlLento(1000);
 
-void setup()
-{
-    // Open serial communications and wait for port to open:
-    Serial.begin(HARD_BAUD_RATE);
-    b_rx.set_limits('#', '!');
-}
-
-
-uint16_t i = 0;
 void control_task (){
-
-    uint32_t intf;
     if (Control.ejecutar()) {
     	c1.update(1);
 	c2.update(1);
@@ -75,6 +65,15 @@ void control_task (){
     }
 }
 
+void control_lento (){
+    if (controlLento.ejecutar()) {
+	c3.update(1);
+
+    }
+}
+
+
+uint16_t i = 0;
 void soh_task(){
     if (SOH.ejecutar()) {
     i = i + 1; 
@@ -92,10 +91,7 @@ void soh_task(){
     } 
 }
 
-void loop()
-{
-
-
+void rx_task(){
     if (serRx.ejecutar()) {
         b_rx.recMsg ();
         if (b_rx.hasMsg()){
@@ -106,7 +102,23 @@ void loop()
 	    Serial.write('\n');
 	}
     }
+}
 
+void setup()
+{
+    // Open serial communications and wait for port to open:
+    Serial.begin(HARD_BAUD_RATE);
+    b_rx.set_limits('#', '!');
+    enc_mess.set_sys(1);
+}
+
+
+
+void loop()
+{
+
+    rx_task();
     control_task();
     soh_task();
+    control_lento ();
 }
