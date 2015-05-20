@@ -92,14 +92,13 @@ void soh_task(){
 }
 
 void rx_task(){
+    bool error;
     if (serRx.ejecutar()) {
         b_rx.recMsg ();
         if (b_rx.hasMsg()){
             strcpy (dec_mess.mensaje, b_rx.buffer_rx);
-	    Serial.println(dec_mess.set_nums());
+	    if (!dec_mess.set_nums()) Serial.write("#0103eeee!");
 	    b_rx.reset();
-	    Serial.write("#0103eeee!");
-	    Serial.write('\n');
 	}
     }
 }

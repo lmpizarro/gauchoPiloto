@@ -4,7 +4,6 @@
 '''
 
 '''
-
 try:
     import pygame
     import sys
@@ -28,85 +27,89 @@ brown = (0x55, 0x33, 0x00)
 
 DELAY_KEY = 4
 
-class Proccess_Joystick:
-    def __init__(self, queue):
-	self.queue = queue    
-        pygame.joystick.init()
-	self.deltaX = 0
-	self.deltaY = 0
 
-        try: # init joystick
+class Proccess_Joystick:
+
+    def __init__(self, queue):
+        self.queue = queue
+        pygame.joystick.init()
+        self.deltaX = 0
+        self.deltaY = 0
+
+        try:  # init joystick
             self.joy = []
             self.sticks = []
-        
-	    if (pygame.joystick.get_count()) == 0:
-		   print ("No hay joystick");
 
-            for n in range(pygame.joystick.get_count()): #
+            if (pygame.joystick.get_count()) == 0:
+                print ("No hay joystick")
+
+            for n in range(pygame.joystick.get_count()):
                 self.stick = pygame.joystick.Joystick(n)
-                self.stick.init() # init instance
+                self.stick.init()  # init instance
                 # report joystick charateristics #
-                lgstr = '-'*20
+                lgstr = '-' * 20
                 lgstr += '\nEnabled HID device: ' + self.stick.get_name()
                 lgstr += '\nit has the following devices :'
-                lgstr += '\n--> buttons : '+ str(self.stick.get_numbuttons())
-                lgstr += '\n--> balls : '+ str(self.stick.get_numballs())
-                lgstr += '\n--> axes : '+ str(self.stick.get_numaxes())
-                lgstr += '\n--> hats : '+ str(self.stick.get_numhats())
-                lgstr += '\n-'*20
-                #logging.info(lgstr)
-		print (lgstr)
-            
+                lgstr += '\n--> buttons : ' + str(self.stick.get_numbuttons())
+                lgstr += '\n--> balls : ' + str(self.stick.get_numballs())
+                lgstr += '\n--> axes : ' + str(self.stick.get_numaxes())
+                lgstr += '\n--> hats : ' + str(self.stick.get_numhats())
+                lgstr += '\n-' * 20
+                # logging.info(lgstr)
+                print (lgstr)
                 self.joy.append(self.stick.get_name())
                 self.sticks.append(self.stick)
         except pygame.error:
             msg = 'no HID device found??'
-            #logging.warning(msg)
-	    print (msg)
+            print (msg)
             joy = 'False'
 
     def process(self, event):
         """Poll for PyGame events and behave accordingly. Return false to stop
         the event loop and end the game."""
-	self.event = event
+        self.event = event
 
-     	# wait 10ms - this is arbitrary, but wait(0) still resulted
-     	# in 100% cpu utilization
-     	pygame.time.wait(30)
+        # wait 10ms - this is arbitrary, but wait(0) still resulted
+        # in 100% cpu utilization
+        pygame.time.wait(30)
 
         msg = None
 
         # poll for pygame events
         for event in pygame.event.get():
-            if event.type == JOYAXISMOTION: # 7
-                msg = [ 'axismotion', event.joy, event.axis, event.value ] # JOYAXISMOTION
-            elif event.type == JOYBALLMOTION: # 8
-                msg =  [ 'ballmotion', event.joy, event.ball, event.value ] # JOYBALLMOTION
-            elif event.type == JOYHATMOTION: # 9
-               msg =  [ 'hatmotion', event.joy, event.hat, event.value[0], event.value[1] ] # JOYHATMOTION
-            elif event.type == JOYBUTTONDOWN: # 10
-                msg = [ 'button', event.joy, event.button, 1 ] # JOYBUTTONDOWN
-            elif event.type == JOYBUTTONUP: # 11
-                msg = [ 'button', event.joy, event.button, 0 ] # JOYBUTTONUP
- 
-	    if msg is not None:
-		print ("enviado", msg )
-		pass
+            if event.type == JOYAXISMOTION:  # 7
+                # JOYAXISMOTION
+                msg = ['axismotion', event.joy, event.axis, event.value]
+            elif event.type == JOYBALLMOTION:  # 8
+                # JOYBALLMOTION
+                msg = ['ballmotion', event.joy, event.ball, event.value]
+            elif event.type == JOYHATMOTION:  # 9
+                # JOYHATMOTION
+                msg = ['hatmotion', event.joy, event.hat,
+                       event.value[0], event.value[1]]
+            elif event.type == JOYBUTTONDOWN:  # 10
+                msg = ['button', event.joy, event.button, 1]  # JOYBUTTONDOWN
+            elif event.type == JOYBUTTONUP:  # 11
+                msg = ['button', event.joy, event.button, 0]  # JOYBUTTONUP
+            if msg is not None:
+                print ("enviado", msg)
+                pass
         return True
 
 
 class Proccess_Key:
-    def __init__ (self, queue):
+
+    def __init__(self, queue):
         self.timeKey = 0
         self.DELAY_KEY = DELAY_KEY
-	self.deltaX = 0
-	self.deltaY = 0
-	self.queue = queue
+        self.deltaX = 0
+        self.deltaY = 0
+        self.queue = queue
         pass
 
     def process(self, event):
         self.timeKey += 1
-	self.event = event
+        self.event = event
 
         if self.timeKey % self.DELAY_KEY == 0:
             keyState = pygame.key.get_pressed()
@@ -131,7 +134,6 @@ class Proccess_Key:
                 self.deltaX = self.deltaY = 0
             else:
                 pass
-                '''
                 if self.deltaX != 0 and self.deltaX < 0:
                     self.deltaX += 1
                 elif self.deltaX != 0 and self.deltaX > 0:
@@ -141,11 +143,11 @@ class Proccess_Key:
                     self.deltaY += 1
                 elif self.deltaY != 0 and self.deltaY > 0:
                     self.deltaY -= 1
-                '''    
             self.queue.mensajeToQueue = (self.deltaX, self.deltaY)
 
 
 class App:
+
     def __init__(self, queue, control, caption="test app", width=640, height=480):
         self.width = width
         self.height = height
@@ -154,8 +156,8 @@ class App:
         self.window_surf = None
         self.size = self.width, self.height
         self.queue = queue
-	self.control = control
-	self.pygame = None
+        self.control = control
+        self.pygame = None
 
     def initApp(self):
         self.pygame = pygame.init()
@@ -171,20 +173,20 @@ class App:
 
         self._running = True
 
-    def getPygame (self):
-	return self.pygame
+    def getPygame(self):
+        return self.pygame
 
     def drawBackGround(self):
         # fondo del puntero
         pygame.draw.rect(self.window_surf, green,
-                         [0, 0, self.width/3, self.width/3], 0)
+                         [0, 0, self.width / 3, self.width / 3], 0)
         pygame.draw.line(self.window_surf, white,
-                         (self.width/6, 0), (self.width/6, self.width/3))
+                         (self.width / 6, 0), (self.width / 6, self.width / 3))
         pygame.draw.line(self.window_surf, white,
-                         (0, self.width/6), (self.width/3, self.width/6))
+                         (0, self.width / 6), (self.width / 3, self.width / 6))
         # base de la pantalla
         pygame.draw.rect(self.window_surf,
-                         blue, [0, self.height-40, self.width, self.height], 0)
+                         blue, [0, self.height - 40, self.width, self.height], 0)
 
     def on_event(self, event):
         if event.type == pygame.QUIT:
@@ -226,15 +228,16 @@ class App:
                 print ("Botón derecho en (%d, %d)" % event.pos)
 
     def drawPointer(self):
-        x = self.width/6
-        y = self.width/6
+        x = self.width / 6
+        y = self.width / 6
         pygame.draw.rect(self.window_surf, white,
-                         [x-10 + self.control.deltaX, y-5 + self.control.deltaY, 20, 10], 0)
+                         [x - 10 + self.control.deltaX, y - 5 + self.control.deltaY, 20, 10], 0)
         pygame.draw.circle(self.window_surf, purple,
                            (x + self.control.deltaX, y + self.control.deltaY), 5)
 
     def drawTextBase(self):
-        estado = " X: " + str(self.control.deltaX) + " Y: " + str(self.control.deltaY)
+        estado = " X: " + str(self.control.deltaX) + \
+            " Y: " + str(self.control.deltaY)
         font = pygame.font.Font(None, 20)
         text = font.render(estado, 1, white)
         self.window_surf.blit(text, (10, 450))
