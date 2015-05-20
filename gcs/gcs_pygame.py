@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#/usr/bin/python
 
 '''
 * * Copyright (C) 2015 Luis Maria Pizarro <lmpizarro@gmail.com>
@@ -17,13 +19,6 @@
 * * You should have received a copy of the GNU General Public License
 * * along with gauchoPiloto; see the file COPYING. If not, see
 * * <http://www.gnu.org/licenses/>.
-'''
-
-# -*- coding: utf-8 -*-
-#/usr/bin/python
-
-'''
-
 '''
 try:
     import pygame
