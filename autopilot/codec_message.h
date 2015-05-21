@@ -23,7 +23,7 @@
 
 class decode_message {
     public:
-        char mensaje [LONG_BUFFER_RX_GPS]; //= "#01040064FFFF002D0043D3!";
+        char mensaje [LONG_BUFFER_RX_GPS]; 
         uint8_t values [LONG_BUFFER_RX_GPS];
         uint16_t nums[4];
         uint8_t cks [2];
@@ -168,12 +168,12 @@ void encode_message::set_buffer (){
     buffer_tx[j] = '!';
 }
 
-void encode_message::set_sys(uint8_t sys_){sys = sys_;};
-void encode_message::set_ope(uint8_t ope_){ope = ope_;};
+void encode_message::set_sys(uint8_t sys_){sys = sys_;}
+void encode_message::set_ope(uint8_t ope_){ope = ope_;}
 void encode_message::set_cks(){
     	
     uint16_t  sum = num[0] + num[1] + num[2] + num[3];
     cks = (uint8_t) sum;
-};
+}
 
 #endif /*DECODE_MESSAGE_H_*/

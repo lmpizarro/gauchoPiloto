@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#/usr/bin/python
+#!/usr/bin/python
 '''
 * * Copyright (C) 2015 Luis Maria Pizarro <lmpizarro@gmail.com>
 * *
@@ -23,119 +23,94 @@
 import serial
 import threading
 import time
-from sets import Set
-
-hexaChars = Set(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B',
-'C', 'D', 'E', 'F', '#', '!'])
-
-string = "45sd#fede1234ffeeaabb887767!fg"
-
-start_ = "#"
-end_  = "!"
-i = 0
-error = 0
-mensaje = ""
-flag_start = 0
-flag_end = 0
-
-serial_comm = None
-
-MENSAJE_TIPO_1 = 1 # 4 enteros de 2 bytes
-LEN_MENSAJE_TIPO_1 = 22 # 4 enteros de 2 bytes
-MENSAJE_TIPO_2 = 2 # 4 enteros de 2 bytes
-LEN_MENSAJE_TIPO_2 = 22 # 4 enteros de 2 bytes
-MENSAJE_TIPO_3 = 3 # 4 enteros de 2 bytes
-LEN_MENSAJE_TIPO_3 = 8 # 4 enteros de 2 bytes
-
-def message_is_hexa(message):
-    condition = True
-    for e in message:
-        condition = condition and (e in hexaChars)
-    return condition    
-
-def _4hexa_to_byte (s):
-    return int(s[3],16) + 16 * int(s[2],16) + 16 * 16 * int(s[1],16) + 16*16*16 * int(s[0],16)
-
-def _2hexa_to_byte (s):
-    return int(s[1],16) + 16 * int(s[0],16)
-
-def parse_message (message):
-    mensaje = message.upper()
-    len_mensaje = len(mensaje)
-    if (message_is_hexa (mensaje) and len_mensaje >= 4):
-        sys = mensaje[0:2]
-        ope = mensaje[2:4]
-        error = 0
-    else:
-        error = 1
-    if error == 0:
-        sys_i = _2hexa_to_byte(sys)
-        ope_i = _2hexa_to_byte(ope)
-        if ope_i == MENSAJE_TIPO_1:
-            if len_mensaje == LEN_MENSAJE_TIPO_1:
-                print "mensaje tipo 1 ", mensaje
-                pass
-        elif ope_i == MENSAJE_TIPO_2:        
-            if len_mensaje == LEN_MENSAJE_TIPO_2:
-                print "mensaje tipo 2 ", mensaje
-                pass
-        elif ope_i == MENSAJE_TIPO_3:        
-            if len_mensaje == LEN_MENSAJE_TIPO_3:
-                print "mensaje tipo 3 ", mensaje
-                pass
-
-def receive_mesg ():
-    mensaje = ""
-    while True:
-        while serial_comm.inWaiting() > 0:
-            c = serial_comm.read(1)
-            if c == start_:
-                flag_start = 1
-                mensaje = ""
-            elif c != end_ and flag_start == 1:
-                mensaje +=c
-            elif c == end_ and flag_start == 1:
-                parse_message (mensaje)
-                mensaje = ""
+import redis
+import codec_message
 
 
-class _4ints_to_mensaje:
-    def __init__(self, sys_, ope_):
-        self.sys = sys_
-        self.ope = ope_
+class serial_port:
+    def __init__(self, start, end, speed, port_):
+        self.start_ = start
+        self.end_ = end
+        self.flag_start = 0
+        self.serial_comm = serial.Serial(
+            port=port_,
+            baudrate=speed,
+            timeout=None,
+        )
+
+    def receive_mesg(self, parser):
+        self.mensaje = ""
+        while True:
+            while self.serial_comm.inWaiting() > 0:
+                c = self.serial_comm.read(1)
+                if c == self.start_:
+                    self.flag_start = 1
+                    self.mensaje = ""
+                elif c != self.end_ and self.flag_start == 1:
+                    self.mensaje += c
+                elif c == self.end_ and self.flag_start == 1:
+                    parser.parse_message(self.mensaje)
+                    self.mensaje = ""
+
+    def send_message(self, m):
+        self.serial_comm.write(m)
+
+class rt_task():
+
+    def __init__(self, delay, ser_comm_):
+        self.delay = delay
+        self.next_call = time.time()
+        self.ser_comm = ser_comm_
+
+    def gen_signal(self):
         pass
 
-    def mensaje (self, num):
-        self.num = num 
-        mensaje = "#" + hex(self.sys)[2:].zfill(2) + hex(self.ope)[2:].zfill(2)
-        sum_num = 0
-        for n in self.num:
-            sum_num += n
-            mensaje += hex(n)[2:].zfill(4)
-        hex_sum_num = hex(sum_num)
-        len_hex_sum_num = len (hex_sum_num)
-        cks = hex_sum_num[len_hex_sum_num - 2:]
-        mensaje = mensaje + cks + '!'
-        return mensaje.upper()
+    def worker(self):
+        self.next_call = self.next_call + self.delay
+        myTime = time.time()
+        threading.Timer(self.next_call - myTime, self.worker).start()
+
+        self.gen_signal ()
+
+        self.ser_comm.send_message(self.mes)
+
+class gen_mediciones(rt_task):
+    pass
+    def gen_signal(self):
+        pass
+        m4 = codec_message.encode_message(1, 3)
+        num = [100, 65535, 45, 67]
+        self.mes = m4.mensaje(num)
+
+
+class gen_referencias (rt_task):
+    pass
+    def gen_signal(self):
+        pass
+        m3 = codec_message.encode_message(1, 4)
+        num = [100, 35, 45, 67]
+        self.mes = m3.mensaje(num)
 
 
 if __name__ == "__main__":
-    serial_comm = serial.Serial(
-        port='/dev/ttyACM0',
-        baudrate=9600,
-        timeout=None,
-        )
-    
-    tr = threading.Thread(target=receive_mesg)
+
+    ser_com = serial_port('#', '!', 115200, '/dev/ttyACM0')
+   
+    parser = codec_message.decode_message()
+
+    tr = threading.Thread(target=ser_com.receive_mesg, args=(parser,))
     tr.setDaemon(True)
     tr.start()
 
+    rt_gen_meas = gen_mediciones(.02, ser_com)
+    rt_gen_meas.worker()
+
+    rt_gen_refs = gen_referencias(1, ser_com)
+    rt_gen_refs.worker()
+
     while True:
-        time.sleep (1)
-        serial_comm.write ("#0101FFFF1FFF0FFF10FFFC!")
-    
-    m4 = _4ints_to_mensaje(1, 4)
-
-    num = [100, 65535, 45, 67]
-    print (m4.mensaje(num))
-
+        time.sleep(10)
+        m3 = codec_message.encode_message(1, 3)
+        num = [100, 0, 45, 67]
+        mes = m3.mensaje(num)
+        ser_com.send_message(mes)
