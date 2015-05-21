@@ -34,37 +34,65 @@ import pygame
 
 from pygame.locals import *
 
+import float_to_int
+import codec_message
+
 # allow multiple joysticks
 joy = []
 
+f_to16 = float_to_int.float_to_int16(-1,1)
+nums_joys = [32768, 32768, 32768, 32768]
+nums_buttons = [0, 0, 0, 0]
+sys_e = 1
+enc_msg = codec_message.encode_message(sys_e)
+
+TYPE_AXIS = 10
+TYPE_BUTTON = 20
+
 # handle joystick event
 def handleJoyEvent(e):
+    str = ""
+    type_e = 0
     if e.type == pygame.JOYAXISMOTION:
         axis = "unknown"
         if (e.dict['axis'] == 0):
-            axis = "X"
+            axis = 0 
 
         if (e.dict['axis'] == 1):
-            axis = "Y"
+            axis = 1 
 
         if (e.dict['axis'] == 2):
-            axis = "Z"
+            axis = 2 
 
         if (e.dict['axis'] == 3):
-            axis = "W" 
+            axis = 3 
 
         if (axis != "unknown"):
-	    str = {'event': 'axis', 'val': e.dict['value'],  'Axis': axis}
+	    #str = {'event': 'axis', 'val': f_to16.float_to_int(e.dict['value']),  'Axis': axis}
+	    nums_joys[axis] = f_to16.float_to_int(e.dict['value'])
+	    type_e = TYPE_AXIS
 
+        print enc_msg.mensaje(nums_joys, type_e)
     elif e.type == pygame.JOYHATMOTION:
         str = {'event': 'hat', 'val':  e.dict['value']}
+	nums_buttons[1] = e.dict['value'][0] + 2
+	nums_buttons[2] = e.dict['value'][1] + 2
+	type_e = TYPE_BUTTON
+	print enc_msg.mensaje(nums_buttons, type_e)
 
     elif e.type == pygame.JOYBUTTONDOWN:
         str = {'event': 'button', 'val': e.dict['button']}
+	type_e = TYPE_BUTTON
+	if nums_buttons[0] == e.dict['button']:
+           nums_buttons[0] = 0
+        else:   
+	   nums_buttons[0] = e.dict['button']
+
+	print enc_msg.mensaje(nums_buttons, type_e)
         # Button 0 (trigger) to quit
         if (e.dict['button'] == 0):
             quit()
-    print (str)
+    #print (str)
     
 # wait for joystick input
 def joystickControl():

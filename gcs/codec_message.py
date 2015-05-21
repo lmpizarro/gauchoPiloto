@@ -66,12 +66,12 @@ class decode_message:
 
 class encode_message:
 
-    def __init__(self, sys_, ope_):
+    def __init__(self, sys_):
         self.sys = sys_
-        self.ope = ope_
         pass
 
-    def mensaje(self, num):
+    def mensaje(self, num, ope_):
+        self.ope = ope_
         self.num = num
         mensaje = "#" + hex(self.sys)[2:].zfill(2) + hex(self.ope)[2:].zfill(2)
         sum_num = self.sys + self.ope
