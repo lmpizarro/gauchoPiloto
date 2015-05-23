@@ -45,17 +45,15 @@ udp_server  = "127.0.0.1"
 udp_comm = comm_ports.comm_udp (15550, udp_server)
 udp_comm.connect()
 
+# Para publicar los mensajes recibidos en el puerto udp
 def reroute_udp_message():
     message = udp_comm.receive_message ()
     queue_io.queues["udp"].publish(message)
     pass
 
-# inicia la cola de mensaje en sentido inverso
-queue_io.setup_queue()
-queue_io.redis_subscriber.subscribe(queue_io.queues["console"].output_)
-
+# Para publicar los mensajes recibidos en el puerto serie
 def reroute_serial_message():
-    ser_com = comm_ports.serial_port('#', '!', 115200, '/dev/ttyACM0')
+    ser_com = comm_ports.serial_port('#', '!', 9600, '/dev/ttyACM0')
    
     parser = codec_message.decode_message()
     while True:
@@ -65,12 +63,14 @@ def reroute_serial_message():
 
              queue_io.queues["ser"].publish(parser.info)
 
+# inicia la cola de mensaje 
+queue_io.setup_queue()
+# subscripción a mensajes que vienen de consola
+queue_io.redis_subscriber.subscribe(queue_io.queues["console"].output_)
+
 
 if __name__ == "__main__":
 
-    ser_com = comm_ports.serial_port('#', '!', 115200, '/dev/ttyACM0')
-
-    parser = codec_message.decode_message()
 
     tr = threading.Thread(target=reroute_serial_message)
     tr.setDaemon(True)
