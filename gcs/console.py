@@ -21,11 +21,9 @@
 '''
 
 from optparse import OptionParser
-import sys      # for exit
-import time     # for sleep
-import queue_io
-import commands
 import threading
+from libs import queue_io
+from libs import commands
 
 '''
 ver: https://github.com/jcubic/jquery.terminal
@@ -35,13 +33,11 @@ def queue_listener():
     for m in queue_io.redis_subscriber.listen():
         data = m["data"]
         channel = m["channel"]
-        #print  ("channel: %s data: %s"%(channel, data))
+        print  ("channel: %s data: %s"%(channel, data))
 
 
 if __name__ == "__main__":
     parser = OptionParser("console.py [options]")
-    parser.add_option("--origin", dest="origin",
-                                  help="web or console", default="console")
 
     parser.add_option("--udp-active",   dest="udp_active", type="int", 
             help="udp input/output active", default=0)
@@ -49,19 +45,10 @@ if __name__ == "__main__":
     parser.add_option("--serial-active",   dest="serial_active", type="int", 
             help="serial input/output active", default=0)
 
-    parser.add_option("--serial-port", dest="serial_port",
-                                  help="serial port", default="/dev/ttyACM0")
-
-    parser.add_option("--baudrate", dest="baudrate", type='int',
-                                  help="serial port baud rate", default=115200)
 
     (opts, args) = parser.parse_args()
 
     print "opts ", (opts, args)
-
-    if opts.origin != "console" and opts.origin != "web":
-            print (("origin:  %s no implementado ")% (opts.origin.upper()))
-            sys.exit(0)
 
 
     # inicia la cola de mensaje
@@ -79,9 +66,5 @@ if __name__ == "__main__":
 	prcs_command.process(command) 
         print prcs_command.salida
         # salida a udp ser proxy 
-        if serial_active:
-            queue_io.queues["ser"].publish(prcs_command.salida)
-
-        if udp_active:
-            queue_io.queues["udp"].publish(prcs_command.salida)
+        queue_io.queues["console"].publish(prcs_command.salida)
 

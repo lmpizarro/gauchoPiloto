@@ -34,8 +34,8 @@ import pygame
 
 from pygame.locals import *
 
-import float_to_int
-import codec_message
+from libs import float_to_int
+from libs import codec_message
 
 # allow multiple joysticks
 joy = []
@@ -44,7 +44,8 @@ f_to16 = float_to_int.float_to_int16(-1,1)
 nums_joys = [32768, 32768, 32768, 32768]
 nums_buttons = [0, 0, 0, 0]
 sys_e = 1
-enc_msg = codec_message.encode_message(sys_e)
+ope_e = 20
+enc_msg = codec_message.encode_message(sys_e, ope_e)
 
 TYPE_AXIS = 10
 TYPE_BUTTON = 20
