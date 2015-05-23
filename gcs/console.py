@@ -21,49 +21,29 @@
 '''
 import sys
 import redis
-
 import sys      # for exit
 import time     # for sleep
-
 import codec_message
+import queue_io
+import threading
 
+'''
+ver: https://github.com/jcubic/jquery.terminal
+'''
 command_words = ['help', 'home', 'go','stop', 'exit', 'chau', 
                  'quit', 'mode', 'refs']
 
-import socket   # for sockets
-class comm_udp:
-    def __init__(self, port, host):
-        # create dgram udp socket
-        try:
-            self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        except socket.error:
-            print 'Failed to create socket'
-
-        self.host = host
-        self.port = port
-
-    def connect(self):
-        self.udp_socket.connect((self.host, self.port))
-
-    def send_message(self, m):
-        self.udp_socket.send(m)
-
-    # receive data from client (data, addr)
-    def recv_message (self):
-        self.resp = self.udp_socket.recvfrom(1024)
-        if self.resp == "": 
-           self.reply = "" 
-           self.addr = self.reply 
-        else:
-           self.reply = self.resp[0] 
-           self.addr = self.resp[1] 
-        return self.reply
+def queue_listener():
+    for m in queue_io.redis_subscriber.listen():
+        data = m["data"]
+        channel = m["channel"]
+        #print  ("channel: %s data: %s"%(channel, data))
 
 def command_info (command):
-    return  ("command info = %s" % (command))
+    return  ["OK", ("command info = %s" % (command))]
 
 def command_go (command):
-    return  ("command info = %s" % (command))
+    return  ["OK", "command info = %s" % (command)]
 
 def command_help (topic):
     if topic == "go":
@@ -72,7 +52,7 @@ def command_help (topic):
         str_ =  "help for home"
     else:
         str_ = "no implementado"
-    return str_    
+    return ["OK", str_]    
 
 def command_refs (command_list):
     sys = int(command_list[1])
@@ -82,98 +62,108 @@ def command_refs (command_list):
     for i,e in enumerate(command_list[3:]):
         num[i] = int(e)
 
-    return encode_m.mensaje(num)
+    return ["OK", encode_m.mensaje(num)]
 
 def do_command(opts):
     origin = opts.origin
-
+    udp_active = opts.udp_active
+    serial_active = opts.serial_active
+    print "debug ------------ ", origin
     while True:
-        if origin == "console" or "udp":
+        if origin == "console":
             command = raw_input("command>")
-        elif origin == "redis":
-            for m in redis_subscriber.listen():
+        '''    
+        elif origin == "web":
+            for m in queue_io.redis_subscriber.listen():
                 command = m["data"]
                 break;
-
+        '''
         command_list = command.split()
         len_command = len(command_list)
         if len_command != 0:
-            response = command_list[0]
+            nombre_comando = command_list[0]
         else:
-            response = ""
+            nombre_comando = ""
 
-        if response in command_words:
-            if response == "exit" or response == "chau" or response == "quit":
+        if nombre_comando in command_words:
+            if nombre_comando == "exit" or nombre_comando == "chau" or\
+            nombre_comando == "quit":
                 sys.exit(0)
 
-            elif response == "refs":
+            elif nombre_comando == "refs":
                 salida = command_refs (command_list)
 
-            elif response == "go":
-                salida = command_go(response)
+            elif nombre_comando == "go":
+                salida = command_go(nombre_comando)
 
-            elif response == "stop":
-                salida = command_info(response)
+            elif nombre_comando == "stop":
+                salida = command_info(nombre_comando)
 
-            elif response == "home":
-                salida = command_info(response)
+            elif nombre_comando == "home":
+                salida = command_info(nombre_comando)
 
-            elif response == "help":
+            elif nombre_comando == "help":
                 if len_command == 1:
-                    salida =  ("command list %s" % (command_words))
+                    salida =  [("command list %s" % (command_words)), ""]
                 elif len_command == 2:
                     if command_list[1] in command_words:
-                        salida = command_help (command_list[1])
+                        salida = [command_help (command_list[1]), ""]
                     else:
-                        print ("no help for: "), command_list[1]
-            if origin == "console":            
-                print salida
-            elif origin == "redis":
-                redis_server.publish(redis_channel_publisher, salida)
-            # salida a udp server    
-            try :
-                #Set the whole string
-                udp_comm.send_message (salida)
-                print udp_comm.recv_message ()
-            except socket.error, msg:
-                print 'Error Code : ' + str(msg[0]) + ' Message ' +  msg[1]
+                        print [("no help for: "), command_list[1], ""]
+            else:
+                pass
 
+            if origin == "console":            
+                print salida[0]
+            elif origin == "web":
+                queue_io.queues["web"].publish(salida[0])
+
+            # salida a udp ser proxy 
+            if serial_active:
+                queue_io.queues["ser"].publish(nombre_comando + ":" + salida[1])
+
+            if udp_active:
+                queue_io.queues["udp"].publish(nombre_comando + ":" + salida[1])
+
+            print salida[1]
         else:
             pass
 
-'''
-ver: https://github.com/jcubic/jquery.terminal
-'''
-server_local = "127.0.0.1"
-redis_server = None
-redis_subscriber = None
-redis_channel_subscriber = "console_i"
-redis_channel_publisher  = "console_o"
+from optparse import OptionParser
 
 if __name__ == "__main__":
-    from optparse import OptionParser
     parser = OptionParser("console.py [options]")
     parser.add_option("--origin", dest="origin",
-                                  help="queue or console", default="console")
+                                  help="web or console", default="console")
 
-    parser.add_option("--udp-port",   dest="udp_port", type="int", 
-            help="udp output port", default=15550)
+    parser.add_option("--udp-active",   dest="udp_active", type="int", 
+            help="udp input/output active", default=0)
+
+    parser.add_option("--serial-active",   dest="serial_active", type="int", 
+            help="serial input/output active", default=0)
+
+    parser.add_option("--serial-port", dest="serial_port",
+                                  help="serial port", default="/dev/ttyACM0")
+
+    parser.add_option("--baudrate", dest="baudrate", type='int',
+                                  help="serial port baud rate", default=115200)
 
     (opts, args) = parser.parse_args()
 
-    if not opts.origin:
-        sys.exit(0)
+    print "opts ", (opts, args)
 
-    if opts.origin:
-        if opts.origin == "redis":
-            redis_server = redis.Redis(server_local)
-            redis_subscriber = redis_server.pubsub()
-            redis_subscriber.subscribe(redis_channel_subscriber)
-            redis_server.publish(redis_channel_publisher, "bienvenido")
-        elif opts.origin != "console":
+    if opts.origin != "console" and opts.origin != "web":
             print (("origin:  %s no implementado ")% (opts.origin.upper()))
             sys.exit(0)
 
-    udp_comm = comm_udp (opts.udp_port, server_local)
-    udp_comm.connect()
+
+    # inicia la cola de mensaje
+    queue_io.setup_queue()
+    queue_io.queues["web"].publish("bienvenido, client web")
+
+    #incial el thread que escucha mensajes
+    tr_listener = threading.Thread(target=queue_listener)
+    tr_listener.setDaemon(True)
+    tr_listener.start()
+
     do_command(opts)

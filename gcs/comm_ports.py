@@ -46,7 +46,7 @@ class comm_udp:
             print 'Failed to send_message'
 
     # receive data from client (data, addr)
-    def recv_message (self):
+    def receive_message (self):
         self.resp = self.udp_socket.recvfrom(1024)
         if self.resp == "": 
            self.reply = "" 

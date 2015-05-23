@@ -44,34 +44,36 @@ class decode_message:
         return int(s[1], 16) + 16 * int(s[0], 16)
 
     def parse_message(self, message):
-        nums = []
+        self.nums = []
         mensaje = message.upper()
         len_mensaje = len(mensaje)
         if (self.message_is_hexa(mensaje) and len_mensaje >= 22):
-            sys = mensaje[0:2]
-            ope = mensaje[2:4]
+            self.sys = mensaje[0:2]
+            self.ope = mensaje[2:4]
             error = 0
         else:
             error = 1
         if error == 0:
-            sys_i = self._2hexa_to_byte(sys)
-            ope_i = self._2hexa_to_byte(ope)
-            nums.append(self._4hexa_to_byte(mensaje[4:8]))
-            nums.append(self._4hexa_to_byte(mensaje[8:12]))
-            nums.append(self._4hexa_to_byte(mensaje[12:16]))
-            nums.append(self._4hexa_to_byte(mensaje[16:20]))
-            info = {'sys': sys_i, 'ope': ope_i, 'nums': nums}
-            print info
+            self.sys_i = self._2hexa_to_byte(self.sys)
+            self.ope_i = self._2hexa_to_byte(self.ope)
+            self.nums.append(self._4hexa_to_byte(mensaje[4:8]))
+            self.nums.append(self._4hexa_to_byte(mensaje[8:12]))
+            self.nums.append(self._4hexa_to_byte(mensaje[12:16]))
+            self.nums.append(self._4hexa_to_byte(mensaje[16:20]))
+            self.info = {'sys': self.sys_i, 'ope': self.ope_i, 'nums': self.nums}
+            #print info
+
+        return error    
 
 
 class encode_message:
 
-    def __init__(self, sys_):
+    def __init__(self, sys_, ope_):
         self.sys = sys_
+        self.ope = ope_
         pass
 
-    def mensaje(self, num, ope_):
-        self.ope = ope_
+    def mensaje(self, num):
         self.num = num
         mensaje = "#" + hex(self.sys)[2:].zfill(2) + hex(self.ope)[2:].zfill(2)
         sum_num = self.sys + self.ope

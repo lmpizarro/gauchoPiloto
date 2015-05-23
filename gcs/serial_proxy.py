@@ -20,40 +20,11 @@
 * * <http://www.gnu.org/licenses/>.
 '''
 
-import serial
 import threading
 import time
 import redis
 import codec_message
-
-
-class serial_port:
-    def __init__(self, start, end, speed, port_):
-        self.start_ = start
-        self.end_ = end
-        self.flag_start = 0
-        self.serial_comm = serial.Serial(
-            port=port_,
-            baudrate=speed,
-            timeout=None,
-        )
-
-    def receive_mesg(self, parser):
-        self.mensaje = ""
-        while True:
-            while self.serial_comm.inWaiting() > 0:
-                c = self.serial_comm.read(1)
-                if c == self.start_:
-                    self.flag_start = 1
-                    self.mensaje = ""
-                elif c != self.end_ and self.flag_start == 1:
-                    self.mensaje += c
-                elif c == self.end_ and self.flag_start == 1:
-                    parser.parse_message(self.mensaje)
-                    self.mensaje = ""
-
-    def send_message(self, m):
-        self.serial_comm.write(m)
+import comm_ports
 
 class rt_task():
 
@@ -91,10 +62,9 @@ class gen_referencias (rt_task):
         num = [100, 35, 45, 67]
         self.mes = m3.mensaje(num)
 
+def test1 ():
 
-if __name__ == "__main__":
-
-    ser_com = serial_port('#', '!', 115200, '/dev/ttyACM0')
+    ser_com = comm_ports.serial_port('#', '!', 115200, '/dev/ttyACM0')
    
     parser = codec_message.decode_message()
 
@@ -114,3 +84,16 @@ if __name__ == "__main__":
         num = [100, 0, 45, 67]
         mes = m3.mensaje(num)
         ser_com.send_message(mes)
+
+
+if __name__ == "__main__":
+    ser_com = comm_ports.serial_port('#', '!', 115200, '/dev/ttyACM0')
+    parser = codec_message.decode_message()
+
+    while True:
+         n_error = ser_com.receive_mesg(parser)
+         if n_error :
+             print parser.info
+
+
+
