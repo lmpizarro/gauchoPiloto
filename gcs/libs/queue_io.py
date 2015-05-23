@@ -53,10 +53,10 @@ def setup_queue (dir_=1):
 
     for q in queues:
         queues[q] = queue_io(q, redis_server, dir_)
-
+    '''
     for q in queues:
         redis_subscriber.subscribe(queues[q].input_)
-    
+    '''
     print "Setup de queues_io"
     for q in queues:
         print (queues[q])

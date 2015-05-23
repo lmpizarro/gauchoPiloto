@@ -19,9 +19,9 @@
 * * along with gauchoPiloto; see the file COPYING. If not, see
 * * <http://www.gnu.org/licenses/>.
 '''
-import comm_ports
-import queue_io
-import codec_message
+from libs import comm_ports
+from libs import queue_io
+from libs import codec_message
 import threading
 import time
 
@@ -51,7 +51,8 @@ def reroute_udp_message():
     pass
 
 # inicia la cola de mensaje en sentido inverso
-queue_io.setup_queue(0)
+queue_io.setup_queue()
+queue_io.redis_subscriber.subscribe(queue_io.queues["console"].output_)
 
 def reroute_serial_message():
     ser_com = comm_ports.serial_port('#', '!', 115200, '/dev/ttyACM0')
@@ -80,12 +81,9 @@ if __name__ == "__main__":
         for m in queue_io.redis_subscriber.listen():
             message = m["data"]
             channel = m["channel"]
-            if channel == "output_ser":
+            if channel == "output_console":
                 print ("channel %s: %s " %(channel, message))
                 ser_com.send_message(message)
-            elif channel == "output_udp":
-                print ("channel %s: %s " %(channel, message))
-                print "udp"
                 udp_comm.send_message (message)
 
             break;

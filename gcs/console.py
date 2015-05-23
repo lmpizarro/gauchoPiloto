@@ -29,6 +29,9 @@ from libs import commands
 ver: https://github.com/jcubic/jquery.terminal
 '''
 
+# inicia la cola de mensaje
+queue_io.setup_queue()
+queue_io.redis_subscriber.subscribe(queue_io.queues["ser"].output_)
 def queue_listener():
     for m in queue_io.redis_subscriber.listen():
         data = m["data"]
@@ -51,8 +54,6 @@ if __name__ == "__main__":
     print "opts ", (opts, args)
 
 
-    # inicia la cola de mensaje
-    queue_io.setup_queue()
 
     #incial el thread que escucha mensajes
     tr_listener = threading.Thread(target=queue_listener)
