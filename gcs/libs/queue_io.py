@@ -47,7 +47,7 @@ class queue_io:
 redis_server = redis.Redis(redis_server_local)
 redis_subscriber = redis_server.pubsub()
 
-queues = {"web":None, "ser":None, "udp":None}
+queues = {"console": None , "web":None, "ser":None, "udp":None}
 
 def setup_queue (dir_=1):
 
