@@ -49,7 +49,6 @@ class comm_udp:
     def receive_message (self):
         self.resp = self.udp_socket.recvfrom(1024)
         if self.resp == "": 
-           self.reply = "" 
            self.addr = self.reply 
         else:
            self.reply = self.resp[0] 
