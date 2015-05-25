@@ -28,7 +28,8 @@ class commands():
                  'quit', 'mode', 'refs']
     salida = None
 
-    def __init__(self):
+    def __init__(self, ope_):
+	self.ope = ope_    
 	pass    
 
     def stop (self, command):
@@ -53,7 +54,7 @@ class commands():
 	if len(command_list) == 7:
 	    try:	
                 sys = int(command_list[1])
-                ope = int(command_list[2])
+                ope = int(command_list[2]) + self.ope
                 encode_m = codec_message.encode_message(sys,ope)
                 num = [0,0,0,0]
                 for i,e in enumerate(command_list[3:]):
