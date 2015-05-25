@@ -26,7 +26,6 @@ from libs import queue_io
 from libs import commands
 
 
-MENSAJE_CONSOLA_BASE = 30
 
 '''
 ver: https://github.com/jcubic/jquery.terminal
@@ -63,7 +62,7 @@ if __name__ == "__main__":
     tr_listener.setDaemon(True)
     tr_listener.start()
 
-    prcs_command = commands.commands(MENSAJE_CONSOLA_BASE)
+    prcs_command = commands.commands()
 
     while True:
         command = raw_input("command>")

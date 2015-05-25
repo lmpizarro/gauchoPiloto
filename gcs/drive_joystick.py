@@ -37,13 +37,7 @@ from pygame.locals import *
 
 from libs import float_to_int
 from libs import codec_message
-
-
-MENSAJE_JOYSTICK_AXIS = 20
-MENSAJE_JOYSTICK_HAT = 21
-MENSAJE_JOYSTICK_BUTTON = 22
-TYPE_AXIS = 10
-TYPE_BUTTON = 20
+from libs import message_defs as ms_def
 
 
 queue_io.setup_queue_joystick()
@@ -55,7 +49,7 @@ f_to16 = float_to_int.float_to_int16(-1,1)
 nums_joys = [32768, 32768, 32768, 32768]
 nums_buttons = [0, 0, 0, 0]
 sys_e = 1
-ope_e = MENSAJE_JOYSTICK_AXIS 
+ope_e = ms_def.MENSAJE_JOYSTICK_AXIS 
 enc_msg = codec_message.encode_message(sys_e, ope_e)
 
 # handle joystick event
@@ -79,13 +73,13 @@ def handleJoyEvent(e):
 	    #str = {'event': 'axis', 'val': f_to16.float_to_int(e.dict['value']),  'Axis': axis}
 	    nums_joys[axis] = f_to16.float_to_int(e.dict['value'])
 
-	enc_msg.ope = MENSAJE_JOYSTICK_AXIS
+	enc_msg.ope = ms_def.MENSAJE_JOYSTICK_AXIS
         js_mess = enc_msg.mensaje(nums_joys)
     elif e.type == pygame.JOYHATMOTION:
         str = {'event': 'hat', 'val':  e.dict['value']}
 	nums_buttons[1] = e.dict['value'][0] + 2
 	nums_buttons[2] = e.dict['value'][1] + 2
-	enc_msg.ope = MENSAJE_JOYSTICK_HAT
+	enc_msg.ope = ms_def.MENSAJE_JOYSTICK_HAT
 	js_mess = enc_msg.mensaje(nums_buttons)
 
     elif e.type == pygame.JOYBUTTONDOWN:
@@ -95,7 +89,7 @@ def handleJoyEvent(e):
         else:   
 	   nums_buttons[0] = e.dict['button']
 
-	enc_msg.ope = MENSAJE_JOYSTICK_BUTTON
+	enc_msg.ope = ms_def.MENSAJE_JOYSTICK_BUTTON
 	js_mess = enc_msg.mensaje(nums_buttons)
 
         # Button 0 (trigger) to quit

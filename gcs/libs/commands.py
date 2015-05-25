@@ -22,14 +22,16 @@
 import sys
 import codec_message
 
+from libs import message_defs as ms_def
+
+
 class commands():
 
     command_words = ['help', 'home', 'go','stop', 'exit', 'chau', 
                  'quit', 'mode', 'refs']
     salida = None
 
-    def __init__(self, ope_):
-	self.ope = ope_    
+    def __init__(self):
 	pass    
 
     def stop (self, command):
@@ -51,10 +53,10 @@ class commands():
         self.salida = ["HELP", "OK", str_]    
 
     def refs (self, command_list):
-	if len(command_list) == 7:
+	if len(command_list) == 6:
 	    try:	
                 sys = int(command_list[1])
-                ope = int(command_list[2]) + self.ope
+                ope = ms_def.MENSAJE_CONSOLE_REFS 
                 encode_m = codec_message.encode_message(sys,ope)
                 num = [0,0,0,0]
                 for i,e in enumerate(command_list[3:]):
