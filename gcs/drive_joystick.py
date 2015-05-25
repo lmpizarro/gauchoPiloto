@@ -28,6 +28,7 @@ import sys
 import optparse
 import logging
 import simplejson
+from libs import queue_io
 
 import sys
 import pygame
@@ -37,6 +38,16 @@ from pygame.locals import *
 from libs import float_to_int
 from libs import codec_message
 
+
+MENSAJE_JOYSTICK_AXIS = 20
+MENSAJE_JOYSTICK_HAT = 21
+MENSAJE_JOYSTICK_BUTTON = 22
+TYPE_AXIS = 10
+TYPE_BUTTON = 20
+
+
+queue_io.setup_queue_joystick()
+
 # allow multiple joysticks
 joy = []
 
@@ -44,16 +55,12 @@ f_to16 = float_to_int.float_to_int16(-1,1)
 nums_joys = [32768, 32768, 32768, 32768]
 nums_buttons = [0, 0, 0, 0]
 sys_e = 1
-ope_e = 20
+ope_e = MENSAJE_JOYSTICK_AXIS 
 enc_msg = codec_message.encode_message(sys_e, ope_e)
-
-TYPE_AXIS = 10
-TYPE_BUTTON = 20
 
 # handle joystick event
 def handleJoyEvent(e):
     str = ""
-    type_e = 0
     if e.type == pygame.JOYAXISMOTION:
         axis = "unknown"
         if (e.dict['axis'] == 0):
@@ -71,29 +78,31 @@ def handleJoyEvent(e):
         if (axis != "unknown"):
 	    #str = {'event': 'axis', 'val': f_to16.float_to_int(e.dict['value']),  'Axis': axis}
 	    nums_joys[axis] = f_to16.float_to_int(e.dict['value'])
-	    type_e = TYPE_AXIS
 
-        print enc_msg.mensaje(nums_joys, type_e)
+	enc_msg.ope = MENSAJE_JOYSTICK_AXIS
+        js_mess = enc_msg.mensaje(nums_joys)
     elif e.type == pygame.JOYHATMOTION:
         str = {'event': 'hat', 'val':  e.dict['value']}
 	nums_buttons[1] = e.dict['value'][0] + 2
 	nums_buttons[2] = e.dict['value'][1] + 2
-	type_e = TYPE_BUTTON
-	print enc_msg.mensaje(nums_buttons, type_e)
+	enc_msg.ope = MENSAJE_JOYSTICK_HAT
+	js_mess = enc_msg.mensaje(nums_buttons)
 
     elif e.type == pygame.JOYBUTTONDOWN:
         str = {'event': 'button', 'val': e.dict['button']}
-	type_e = TYPE_BUTTON
 	if nums_buttons[0] == e.dict['button']:
            nums_buttons[0] = 0
         else:   
 	   nums_buttons[0] = e.dict['button']
 
-	print enc_msg.mensaje(nums_buttons, type_e)
+	enc_msg.ope = MENSAJE_JOYSTICK_BUTTON
+	js_mess = enc_msg.mensaje(nums_buttons)
+
         # Button 0 (trigger) to quit
         if (e.dict['button'] == 0):
             quit()
-    #print (str)
+    print (js_mess)
+    queue_io.queues["joystick"].publish(js_mess)
     
 # wait for joystick input
 def joystickControl():

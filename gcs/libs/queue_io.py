@@ -47,7 +47,7 @@ class queue_io:
 redis_server = redis.Redis(redis_server_local)
 redis_subscriber = redis_server.pubsub()
 
-queues = {"console": None , "web":None, "ser":None, "udp":None}
+queues = {"joystick":None, "console": None , "web":None, "ser":None, "udp":None}
 
 def setup_queue (dir_=1):
 
@@ -61,6 +61,9 @@ def setup_queue (dir_=1):
     for q in queues:
         print (queues[q])
 
+
+def setup_queue_joystick (dir_=1):
+    queues["joystick"] = queue_io("joystick", redis_server, dir_)
 
 def test_():
     setup_queue ()
