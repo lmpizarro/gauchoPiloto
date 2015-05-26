@@ -55,9 +55,9 @@ class commands():
     def refs (self, command_list):
 	if len(command_list) == 6:
 	    try:	
-                sys = int(command_list[1])
-                ope = ms_def.MENSAJE_CONSOLE_REFS 
-                encode_m = codec_message.encode_message(sys,ope)
+                addr = int(command_list[1])
+                mess_def = ms_def.MENSAJE_CONSOLE_REFS 
+                encode_m = codec_message.encode_message(addr, mess_def)
                 num = [0,0,0,0]
                 for i,e in enumerate(command_list[3:]):
                     num[i] = int(e)

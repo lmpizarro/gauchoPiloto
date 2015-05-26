@@ -70,15 +70,20 @@ class decode_message:
 
 class encode_message:
 
-    def __init__(self, sys_, ope_):
-        self.sys = sys_
-        self.ope = ope_
-        pass
+    def __init__(self, addr, mess_def):
+        self.addr = addr 
+        self.mess_def = mess_def
+
+    def set_addr(self, addr):
+        self.addr = addr
+
+    def set_mess_def(self, mess_def)
+        self.mess_def = mess_def
 
     def mensaje(self, num):
         self.num = num
         mensaje = "#" + hex(self.sys)[2:].zfill(2) + hex(self.ope)[2:].zfill(2)
-        sum_num = self.sys + self.ope
+        sum_num = self.addr + self.mess_def
         for n in self.num:
             if n > 65535:
                 n = 65535

@@ -26,7 +26,6 @@ from libs import queue_io
 from libs import commands
 
 
-
 '''
 ver: https://github.com/jcubic/jquery.terminal
 '''

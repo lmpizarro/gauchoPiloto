@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#from __future__ import absolute_import
 
 from flask import Flask
 from flask import render_template
@@ -12,6 +13,8 @@ import flask
 
 import random
 import navigation
+
+import commands
 
 def create_app(configfile=None):
     app = Flask(__name__)
