@@ -38,7 +38,7 @@ class proxy_serial:
                 self.redis_server.publish("serial_read", self.parser.info['mess'])
 
     def write (self, m):
-	           self.redis_server.publish("serial_write", m)
+        self.redis_server.publish("serial_write", m)
 
     def run (self):
         tr_queue_to_ser = threading.Thread(target=self.queue_to_ser, args=())

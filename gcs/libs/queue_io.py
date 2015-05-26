@@ -24,16 +24,10 @@ import redis
 redis_server_local = "127.0.0.1"
 
 class queue_io:
-    def __init__(self, name, redis_server_, dir_=1):
+    def __init__(self, name, redis_server_):
         self.name = name
-        self.dir_ = dir_
-        if self.dir_ == 1:
-            self.input_ = "input_" + name
-            self.output_ = "output_" + name
-        else:
-            self.input_ = "output_" + name
-            self.output_ = "input_" + name
-
+        self.input_ = "input_" + name
+        self.output_ = "output_" + name
 
         self.redis_server = redis_server_
 
@@ -47,23 +41,20 @@ class queue_io:
 redis_server = redis.Redis(redis_server_local)
 redis_subscriber = redis_server.pubsub()
 
-queues = {"joystick":None, "console": None , "web":None, "ser":None, "udp":None}
+queues = {"joystick":None, "console": None , "web":None}
 
-def setup_queue (dir_=1):
+def setup_queue ():
 
     for q in queues:
-        queues[q] = queue_io(q, redis_server, dir_)
-    '''
-    for q in queues:
-        redis_subscriber.subscribe(queues[q].input_)
-    '''
+        queues[q] = queue_io(q, redis_server)
+
     print "Setup de queues_io"
     for q in queues:
         print (queues[q])
 
 
-def setup_queue_joystick (dir_=1):
-    queues["joystick"] = queue_io("joystick", redis_server, dir_)
+def setup_queue_joystick ():
+    queues["joystick"] = queue_io("joystick", redis_server)
 
 def test_():
     setup_queue ()

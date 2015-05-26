@@ -77,7 +77,7 @@ class encode_message:
     def set_addr(self, addr):
         self.addr = addr
 
-    def set_mess_def(self, mess_def)
+    def set_mess_def(self, mess_def):
         self.mess_def = mess_def
 
     def mensaje(self, num):

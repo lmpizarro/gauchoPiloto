@@ -32,7 +32,8 @@ ver: https://github.com/jcubic/jquery.terminal
 
 # inicia la cola de mensaje
 queue_io.setup_queue()
-queue_io.redis_subscriber.subscribe(queue_io.queues["ser"].output_)
+#queue_io.redis_subscriber.subscribe(queue_io.queues["ser"].output_)
+queue_io.redis_subscriber.subscribe("serial_read")
 def queue_listener():
     for m in queue_io.redis_subscriber.listen():
         data = m["data"]
