@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-#!/usr/bin/python
-'''
+/*
 * * Copyright (C) 2015 Luis Maria Pizarro <lmpizarro@gmail.com>
 * *
 * * This file is part of gauchopiloto.
@@ -18,29 +16,24 @@
 * * You should have received a copy of the GNU General Public License
 * * along with gauchoPiloto; see the file COPYING. If not, see
 * * <http://www.gnu.org/licenses/>.
-'''
+*/
 
-from libs import proxy_serial
-from libs import proxy_udp
-from libs import task_timer
+#ifndef UDPServer_H_
+#define UDPServer_H_
 
-class soh_mess(task_timer.rt_task):
+#include <string>          
+#include "defs.h"
+#include "codec_message.h" 
 
-    def run_(self):
-        pass
-        msg = "#0101000F00FF0FFFFFFF99!"
-	self.proxy.write(msg)
+void *udp_server (void *);
 
-
-if __name__ == "__main__":
-    #ps = proxy_serial.proxy_serial("127.0.0.1", "/dev/ttyACM0", 115200, '#','!')
-    #ps.run()
-
-    pu = proxy_udp.proxy_udp("127.0.0.1", "127.0.0.1", 15550)
-    pu.run()
-
-    soh_m = soh_mess(1, pu)
-    soh_m.worker()
+extern const int ECHOMAX = 255;     // Longest string to echo
+extern char rx_Buffer[ECHOMAX];         // Buffer for echo string
+extern int recvMsgSize;                  // Size of received message
+extern std::string sourceAddress;             // Address of datagram source
+extern unsigned short sourcePort;        // Port of datagram source
 
 
+decode_message dec_mess;
 
+#endif /*UDPServer_H_*/

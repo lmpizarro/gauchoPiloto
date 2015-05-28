@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-#!/usr/bin/python
-'''
+/*
 * * Copyright (C) 2015 Luis Maria Pizarro <lmpizarro@gmail.com>
 * *
 * * This file is part of gauchopiloto.
@@ -18,29 +16,25 @@
 * * You should have received a copy of the GNU General Public License
 * * along with gauchoPiloto; see the file COPYING. If not, see
 * * <http://www.gnu.org/licenses/>.
-'''
+*/
 
-from libs import proxy_serial
-from libs import proxy_udp
-from libs import task_timer
+#ifndef PROCESS_MESSAGE_H_
+#define PROCESS_MESSAGE_H_
 
-class soh_mess(task_timer.rt_task):
+#include "codec_message.h"
 
-    def run_(self):
-        pass
-        msg = "#0101000F00FF0FFFFFFF99!"
-	self.proxy.write(msg)
+/*
+ * Process Message
+ * */
+class Process_Message{
+    public:
+        void soh_a ();
+        void refs_a ();
+        void meas_a ();
+        bool process ();
+        decode_message dec_mess;
+	char * r_buffer;
+    private:	    
+};
 
-
-if __name__ == "__main__":
-    #ps = proxy_serial.proxy_serial("127.0.0.1", "/dev/ttyACM0", 115200, '#','!')
-    #ps.run()
-
-    pu = proxy_udp.proxy_udp("127.0.0.1", "127.0.0.1", 15550)
-    pu.run()
-
-    soh_m = soh_mess(1, pu)
-    soh_m.worker()
-
-
-
+#endif /*PROCESS_MESSAGE_H_*/

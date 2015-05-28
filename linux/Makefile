@@ -20,7 +20,7 @@
 CXX = g++
 #CXXFLAGS = -Wall -ansi -pedantic -g
 #CXXFLAGS=-pedantic -O3 -Wall -Wextra -Werror -I ../autopilot
-CXXFLAGS=-pedantic -O3 -Wall -Wextra -I ../autopilot
+CXXFLAGS=-pedantic -O3 -Wall -Wextra 
 LIBS = -lpthread
 
 ifeq ($(shell uname),SunOS)
@@ -29,10 +29,11 @@ endif
 
 all:  UDPServer utils.o
 
-UDPServer: UDPServer.o PracticalSocket.o 
-	$(CXX) -o UDPServer  UDPServer.o PracticalSocket.o $(LIBS)
+UDPServer: UDPServer.o PracticalSocket.o process_message.o filters.o codec_message.o
+#	$(CXX) -o UDPServer  UDPServer.o PracticalSocket.o  filters.o  codec_message.o process_message.o $(LIBS)
+	$(CXX) -o UDPServer UDPServer.o PracticalSocket.o codec_message.o process_message.o filters.o $(LIBS)
 
-UDPServer.o: UDPServer.cpp PracticalSocket.cpp PracticalSocket.h
+UDPServer.o: UDPServer.cpp PracticalSocket.cpp PracticalSocket.h filters.h process_message.h
 	$(CXX) $(CXXFLAGS) -c  UDPServer.cpp
 
 PracticalSocket.o: PracticalSocket.cpp PracticalSocket.h
@@ -41,5 +42,16 @@ PracticalSocket.o: PracticalSocket.cpp PracticalSocket.h
 utils.o: utils.cpp utils.h
 	$(CXX) $(CXXFLAGS) -c utils.cpp
 
+process_message.o: process_message.cpp process_message.h
+	$(CXX) $(CXXFLAGS) -c process_message.cpp
+
+filters.o: filters.cpp filters.h
+	$(CXX) $(CXXFLAGS) -c filters.cpp
+
+codec_message.o: codec_message.cpp codec_message.h
+	$(CXX) $(CXXFLAGS) -c codec_message.cpp
+
+
+
 clean:
-	$(RM) UDPEchoServer *.o
+	$(RM) UDPServer *.o

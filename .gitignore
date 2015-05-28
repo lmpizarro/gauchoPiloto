@@ -7,3 +7,5 @@
 ./autopilot/Makefile
 *.pyc
 ./gcs/webGCS/gcs/__init__.pyc
+linux/*.o
+linux/UDPServer
