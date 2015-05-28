@@ -23,6 +23,7 @@
 from libs import proxy_serial
 from libs import proxy_udp
 from libs import task_timer
+import redis
 
 class soh_mess(task_timer.rt_task):
 
@@ -30,6 +31,14 @@ class soh_mess(task_timer.rt_task):
         pass
         msg = "#0101000F00FF0FFFFFFF99!"
 	self.proxy.write(msg)
+
+class pr_mess(task_timer.rt_task):
+
+    def run_(self):
+        pass
+        msg = "#0103000F00FF0FFFFFFF99!"
+	self.proxy.write(msg)
+
 
 
 if __name__ == "__main__":
@@ -42,5 +51,8 @@ if __name__ == "__main__":
     soh_m = soh_mess(1, pu)
     soh_m.worker()
 
+    pr_m = pr_mess(.02, pu)
+    pr_m.worker()
 
+    pu.read()
 

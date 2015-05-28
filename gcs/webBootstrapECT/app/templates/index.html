@@ -76,7 +76,7 @@ source.onmessage = function (event) {
 	    attitude.setPitch(parseFloat(ah.pitch));
 	        // Heading update
 	    heading.setHeading(parseFloat(ah.heading));
-	    console.log(ah.pitch);
+	    //console.log(ah.pitch);
 
 	       // Vario update
 	    //variometer.setVario(2*Math.sin(increment/10));
@@ -91,6 +91,12 @@ source.onmessage = function (event) {
 };
 
 
+var source_udp = new EventSource( $SCRIPT_ROOT +  '/udp_read');
+source_udp.onmessage = function (event){
+    var udp_data = JSON.parse(event.data)
+	    console.log(udp_data.udp_mess);	
+
+}
 
 </script> 
 

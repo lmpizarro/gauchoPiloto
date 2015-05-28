@@ -39,6 +39,9 @@ class proxy_serial:
         self.redis_subscriber = self.redis_server.pubsub()
         self.redis_subscriber.subscribe("serial_write")
 
+        self.read_serial_subscriber = self.redis_server.pubsub()
+        self.read_serial_subscriber.subscribe("serial_read")
+
         self.ser_com = comm_ports.serial_port(self.start, self.end, self.baud_rate, self.serial_port)
         self.parser = codec_message.decode_message()
 
@@ -60,6 +63,13 @@ class proxy_serial:
 
     def write (self, m):
         self.redis_server.publish("serial_write", m)
+
+    def read(self):
+        for m in self.read_serial_subscriber.listen():
+            channel = m['channel']
+            data = m['data']
+            if channel == "serial_read":
+                print data
 
     def run (self):
         tr_queue_to_ser = threading.Thread(target=self.queue_to_ser, args=())
