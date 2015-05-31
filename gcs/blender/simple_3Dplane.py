@@ -4,7 +4,14 @@ refs: https://www.youtube.com/watch?v=1OePNW34-z4
 
 import bpy
 
-rotZ = 1
+import http.client
+
+conn = http.client.HTTPConnection("wanderdrone.appspot.com")
+conn.request("GET", "/")
+r1 = conn.getresponse()
+if r1.status == 200:
+    data1 = r1.read()
+    print(".....", data1 )
 
 sce = bpy.context.scene
 
@@ -85,6 +92,17 @@ def run ():
 		proportional='DISABLED', 
 		proportional_edit_falloff='SMOOTH', 
 		proportional_size=1)
+
+    bpy.ops.transform.translate(value=(0.0, -1, 0.0), 
+		    constraint_axis=(False, False, False), 
+		    constraint_orientation='GLOBAL', 
+		    mirror=False, proportional='DISABLED', 
+		    proportional_edit_falloff='SMOOTH', 
+		    proportional_size=1)
+
+    ob = bpy.data.objects.get("plane")
+    #ob.location = (0, -1, 0)
+
 
 
 if __name__ == "__main__":
