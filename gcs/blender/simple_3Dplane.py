@@ -32,7 +32,15 @@ def create_part(name,resize,translate):
     part.name = name
     return part
 
-
+def union_part (name, part_a, part_b):
+    boo = part_a.modifiers.new('Booh', 'BOOLEAN')
+    boo.object = part_b
+    boo.operation = 'UNION'
+    bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Booh")
+    sce.objects.unlink(part_b)
+    new_element = bpy.context.object
+    new_element.name = name
+    return new_element
 
 def run ():
     # FUSE
@@ -48,35 +56,17 @@ def run ():
     blender python boolean modifier
     http://blenderartists.org/forum/showthread.php?243680-Scripting-with-Boolean-Modifiers-Blender-2-6
     '''
-    boo = rudder.modifiers.new('Booh', 'BOOLEAN')
-    boo.object = elevator
-    boo.operation = 'UNION'
-    bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Booh")
-    sce.objects.unlink(elevator)
-    rudder_ele = bpy.context.object
-    rudder_ele.name = 'rudder_ele'
-
-    boo = rudder_ele.modifiers.new('Booh', 'BOOLEAN')
-    boo.object = fuse
-    boo.operation = 'UNION'
-    bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Booh")
-    sce.objects.unlink(fuse)
-    rudder_fuse = bpy.context.object
-    rudder_fuse.name = 'rudder_fuse'
-
-    boo = rudder_fuse.modifiers.new('Booh', 'BOOLEAN')
-    boo.object = wing
-    boo.operation = 'UNION'
-    bpy.ops.object.modifier_apply(apply_as='DATA', modifier="Booh")
-    sce.objects.unlink(wing)
-    plane = bpy.context.object
-    plane.name = 'plane'
+    rudder_ele = union_part('rudder_ele', rudder, elevator)
+    rudder_fuse = union_part('rudder_ele', rudder_ele, fuse)
+    plane = union_part('plane', rudder_fuse, wing)
 
     '''
     blender python rotation matrix
     http://blender.stackexchange.com/questions/7598/rotation-around-the-cursor-with-low-level-python-no-bpy-ops
-    bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
+    '''
+    bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
 
+    '''
     bpy.ops.transform.rotate(value=0.1,axis=(1, 1, 0),
 		constraint_axis=(False, False, False), 
 		constraint_orientation='GLOBAL', 
@@ -92,10 +82,10 @@ def run ():
 		    proportional_edit_falloff='SMOOTH', 
 		    proportional_size=1)
 
-    ob = bpy.data.objects.get("plane")
-    #ob.location = (0, -1, 0)
-
     '''
+    ob = bpy.data.objects.get("plane")
+    ob.location = (0, -1, 0)
+
 
 
 if __name__ == "__main__":
