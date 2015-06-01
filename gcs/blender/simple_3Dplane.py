@@ -18,38 +18,31 @@ sce = bpy.context.scene
 bpy.ops.object.camera_add(view_align=True, enter_editmode=False, 
 location=(5, 5, 5), rotation=(1.10871, 0.0132652, 1.14827))
 
+cube_object = bpy.ops.mesh.primitive_cube_add
+
+def create_part(name,resize,translate):
+    '''
+    create_part(fuse,(0.07, 1.1, 0.05),(0, 0.35, 0)):
+    '''
+    cube_object(radius=1, view_align=False, enter_editmode=False, 
+    location=(0, 0, 0), rotation=(0,0,0))
+    bpy.ops.transform.resize(value=resize)
+    bpy.ops.transform.translate(value=translate)
+    part = bpy.context.object
+    part.name = name
+    return part
+
+
+
 def run ():
     # FUSE
-    bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, 
-    location=(0, 0, 0), rotation=(0,0,0))
-    bpy.ops.transform.resize(value=(0.07, 1.1, 0.05))
-    bpy.ops.transform.translate(value=(0, 0.35, 0))
-    fuse = bpy.context.object
-    fuse.name = 'fuse'
-
+    fuse = create_part('fuse', (0.07, 1.1, 0.05), (0, 0.35, 0))
     # WING
-    bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, 
-    location=(0, 0, 0), rotation=(0,0,0))
-    bpy.ops.transform.resize(value=(1.6, 0.2, 0.02))
-    bpy.ops.transform.translate(value=(0, 0, 0.03))
-    wing = bpy.context.object
-    wing.name = 'wing'
-
+    wing = create_part('wing', (1.6, 0.2, 0.02), (0, 0, 0.03))
     # ELEVATOR
-    bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, 
-    location=(0, 0, 0), rotation=(0,0,0))
-    bpy.ops.transform.resize(value=(0.6, 0.15, 0.02))
-    bpy.ops.transform.translate(value=(0, 1.5, 0.02))
-    elevator = bpy.context.object
-    elevator.name = 'elevator'
-
+    elevator = create_part('wing', (0.6, 0.15, 0.02), (0, 1.5, 0.02))
     # RUDDER
-    bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, 
-    location=(0, 0, 0), rotation=(0,0,0))
-    bpy.ops.transform.resize(value=(0.005, 0.15, 0.15))
-    bpy.ops.transform.translate(value=(0, 1.5, 0.15))
-    rudder = bpy.context.object
-    rudder.name = 'rudder'
+    rudder = create_part('wing', (0.005, 0.15, 0.15), (0, 1.5, 0.15))
 
     '''
     blender python boolean modifier
@@ -82,7 +75,6 @@ def run ():
     '''
     blender python rotation matrix
     http://blender.stackexchange.com/questions/7598/rotation-around-the-cursor-with-low-level-python-no-bpy-ops
-    '''
     bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
 
     bpy.ops.transform.rotate(value=0.1,axis=(1, 1, 0),
@@ -103,6 +95,7 @@ def run ():
     ob = bpy.data.objects.get("plane")
     #ob.location = (0, -1, 0)
 
+    '''
 
 
 if __name__ == "__main__":
