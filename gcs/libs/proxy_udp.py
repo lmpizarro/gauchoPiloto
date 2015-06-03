@@ -41,32 +41,34 @@ class proxy_udp:
 
         self.host = host
         self.port = port
+        self.q_udp_write = "udp_write" + str(self.port)
+        self.q_udp_read = "udp_read" + str(self.port)
 
         self.s.connect((self.host, self.port))
 
         self.redis_server = redis.Redis(self.redis_server_addr)
         self.redis_subscriber = self.redis_server.pubsub()
-        self.redis_subscriber.subscribe("udp_write")
+        self.redis_subscriber.subscribe(self.q_udp_write)
 
         self.read_udp_subscriber = self.redis_server.pubsub()
-        self.read_udp_subscriber.subscribe("udp_read")
+        self.read_udp_subscriber.subscribe(self.q_udp_read)
 
     def queue_to_udp(self):
         for m in self.redis_subscriber.listen():
             channel = m['channel']
             data = m['data']
-            if channel == "udp_write" and len(str(data)) == 24:
+            if channel == self.q_udp_write and len(str(data)) == 24:
                 #print data
                 self.send_message(packing.pack_mes(str(data)))
 
     def write(self, m):
-        self.redis_server.publish("udp_write", m)
+        self.redis_server.publish(self.q_udp_write, m)
 
     def read (self):
         for m in self.read_udp_subscriber.listen():
             channel = m['channel']
             data = m['data']
-            if channel == "udp_read":
+            if channel == self.q_udp_read:
                 print data
 
 
@@ -84,7 +86,7 @@ class proxy_udp:
             if len(str(reply)) == 24:
                 reply = packing.unpack_mes(str(reply))
                 #print 'Server reply : ' + reply[0]
-            self.redis_server.publish("udp_read", reply[0])
+            self.redis_server.publish(self.q_udp_read, reply[0])
         except socket.error, msg:
             print 'Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
             sys.exit()
