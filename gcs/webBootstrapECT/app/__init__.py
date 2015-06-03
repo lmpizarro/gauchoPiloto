@@ -20,7 +20,7 @@ import redis
 
 redis_server = redis.Redis("127.0.0.1")
 redis_subscriber = redis_server.pubsub()
-redis_subscriber.subscribe("udp_read")
+redis_subscriber.subscribe("udp_read15550")
 
 
 
