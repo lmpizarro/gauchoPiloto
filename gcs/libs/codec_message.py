@@ -82,7 +82,7 @@ class encode_message:
 
     def mensaje(self, num):
         self.num = num
-        mensaje = "#" + hex(self.sys)[2:].zfill(2) + hex(self.ope)[2:].zfill(2)
+        mensaje = "#" + hex(self.addr)[2:].zfill(2) + hex(self.mess_def)[2:].zfill(2)
         sum_num = self.addr + self.mess_def
         for n in self.num:
             if n > 65535:
@@ -97,5 +97,3 @@ class encode_message:
         cks = hex_sum_num[len_hex_sum_num - 2:]
         mensaje = mensaje + cks + '!'
         return mensaje.upper()
-
-
